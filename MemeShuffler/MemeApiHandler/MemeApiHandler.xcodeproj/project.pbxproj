@@ -8,11 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		C66D1D3D2C39ADFC00C32D91 /* MemeApiHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = C66D1D3C2C39ADFC00C32D91 /* MemeApiHandler.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C66D1D442C39AE0D00C32D91 /* MemeApiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66D1D432C39AE0D00C32D91 /* MemeApiManager.swift */; };
+		C66D1D462C39AE3200C32D91 /* Data Structures.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66D1D452C39AE3200C32D91 /* Data Structures.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		C66D1D392C39ADFC00C32D91 /* MemeApiHandler.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MemeApiHandler.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C66D1D3C2C39ADFC00C32D91 /* MemeApiHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MemeApiHandler.h; sourceTree = "<group>"; };
+		C66D1D432C39AE0D00C32D91 /* MemeApiManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemeApiManager.swift; sourceTree = "<group>"; };
+		C66D1D452C39AE3200C32D91 /* Data Structures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data Structures.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,6 +50,8 @@
 			isa = PBXGroup;
 			children = (
 				C66D1D3C2C39ADFC00C32D91 /* MemeApiHandler.h */,
+				C66D1D432C39AE0D00C32D91 /* MemeApiManager.swift */,
+				C66D1D452C39AE3200C32D91 /* Data Structures.swift */,
 			);
 			path = MemeApiHandler;
 			sourceTree = "<group>";
@@ -93,6 +99,7 @@
 				TargetAttributes = {
 					C66D1D382C39ADFC00C32D91 = {
 						CreatedOnToolsVersion = 15.4;
+						LastSwiftMigration = 1540;
 					};
 				};
 			};
@@ -129,6 +136,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C66D1D462C39AE3200C32D91 /* Data Structures.swift in Sources */,
+				C66D1D442C39AE0D00C32D91 /* MemeApiManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -264,6 +273,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -288,6 +298,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -297,6 +308,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
