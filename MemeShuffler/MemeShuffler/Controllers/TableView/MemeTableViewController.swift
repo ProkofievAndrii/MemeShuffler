@@ -16,6 +16,7 @@ class MemeTableViewController: UIViewController {
     @IBOutlet private weak var sourceSelectorButton: UIBarButtonItem!
     @IBOutlet private weak var customizeButton: UIBarButtonItem!
     
+    //Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         loadPhotos()
@@ -25,8 +26,25 @@ class MemeTableViewController: UIViewController {
 
 //MARK: - API Manager Request
 extension MemeTableViewController {
+    //Request endpoint
     private func loadPhotos() {
-        MemeApiManager.loadMemesCompilation()
+        configureApiParameters()
+        execureRequest()
+    }
+    
+    private func configureApiParameters() {
+        MemeApiManager.setSubredditName(Subreddits.deadbydaylight.rawValue)
+        MemeApiManager.setQuantity(20)
+    }
+    
+    private func execureRequest() {
+        MemeApiManager.loadMemesCompilation { memes in
+            if let memes = memes {
+                print("Successfully loaded memes: \(memes)")
+            } else {
+                print("Failed to load memes")
+            }
+        }
     }
 }
 
@@ -67,7 +85,7 @@ extension MemeTableViewController: UITableViewDelegate {
 //MARK: - Table Data Source
 extension MemeTableViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 20
+        return MemeApiManager.getQuantity()
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

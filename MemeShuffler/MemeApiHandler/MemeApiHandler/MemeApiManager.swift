@@ -9,38 +9,80 @@ import Foundation
 
 public class MemeApiManager {
     
-    private func requestMemesPortion(using apiParams: (quantity: Int, subredditName: Int), completion: @escaping ([Meme]?) -> Void) {
-        var urlString = "https://meme-api.com/gimme/\(apiParams.subredditName)/\(apiParams.quantity)"
+    //MARK: - Variables
+    //Internal API parameters manager
+    private static var parameters = ApiParametersManager()
+    private static var currentTask: URLSessionDataTask?
+    
+    //MARK: - API request
+    private static func requestMemesPortion(completion: @escaping ([Meme]?, Error?) -> Void) {
+        var components = URLComponents(string: "https://meme-api.com/gimme")!
+        components.path += "/\(parameters.getSubredditName())/\(parameters.getQuantity())"
         
-        guard let url = URL(string: urlString) else {
-            completion(nil)
+        guard let url = components.url else {
+            completion(nil, URLError(.badURL))
             return
         }
         
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            if let error = error {
+        currentTask?.cancel()
+        currentTask = URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error as? URLError, error.code != .cancelled {
                 print("Error fetching data: \(error.localizedDescription)")
-                completion(nil)
+                completion(nil, error)
                 return
             }
             
             guard let data = data else {
-                completion(nil)
+                completion(nil, URLError(.badServerResponse))
                 return
             }
             
             do {
                 let decoder = JSONDecoder()
-                let memeResponce = try decoder.decode([Meme].self, from: data)
-                completion(memeResponce)
+                let memeResponse = try decoder.decode(Root.self, from: data)
+                completion(memeResponse.memes, nil)
             } catch {
                 print("Error decoding JSON: \(error.localizedDescription)")
-                completion(nil)
+                completion(nil, error)
             }
-        }.resume()
+        }
+        currentTask?.resume()
     }
 
-    public static func loadMemesCompilation() {
-        
+    //MARK: - Public methods for external usage
+    //Request endpoint realization
+    public static func loadMemesCompilation(completion: @escaping ([Meme]?) -> Void) {
+        requestMemesPortion { memes, error in
+            if let error = error {
+                print("Failed to load memes: \(error.localizedDescription)")
+                completion(nil)
+                return
+            }
+            
+            if let memes = memes {
+                print("Loaded \(memes.count) memes")
+                completion(memes)
+            } else {
+                print("Failed to load memes")
+                completion(nil)
+            }
+        }
+    }
+    
+    // Parameters Getters/Setters
+    public static func getSubredditName() -> String {
+        return parameters.getSubredditName()
+    }
+    
+    public static func setSubredditName(_ newName: String) {
+        parameters.setSubredditName(newName)
+    }
+    
+    public static func getQuantity() -> Int {
+        return parameters.getQuantity()
+    }
+    
+    public static func setQuantity(_ newQuantity: Int) {
+        parameters.setQuantity(newQuantity)
     }
 }
