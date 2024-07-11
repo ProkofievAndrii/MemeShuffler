@@ -14,12 +14,12 @@
 		C6DFA3782C3EF57100F62CF6 /* MemeShuffler.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA3762C3EF57100F62CF6 /* MemeShuffler.xcdatamodeld */; };
 		C6DFA37A2C3EF57300F62CF6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C6DFA3792C3EF57300F62CF6 /* Assets.xcassets */; };
 		C6DFA37D2C3EF57300F62CF6 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = C6DFA37C2C3EF57300F62CF6 /* Base */; };
-		C6DFA38A2C3EF6B600F62CF6 /* MemeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA3892C3EF6B600F62CF6 /* MemeTableViewCell.swift */; };
+		C6DFA38A2C3EF6B600F62CF6 /* MemeViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA3892C3EF6B600F62CF6 /* MemeViewCell.swift */; };
 		C6DFA3922C3EF73100F62CF6 /* MemeApiHandler.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6DFA3902C3EF71000F62CF6 /* MemeApiHandler.framework */; };
 		C6DFA3932C3EF73100F62CF6 /* MemeApiHandler.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C6DFA3902C3EF71000F62CF6 /* MemeApiHandler.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		C6DFA3972C3EF74E00F62CF6 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = C6DFA3962C3EF74E00F62CF6 /* Kingfisher */; };
-		C6DFA39A2C3EF78700F62CF6 /* SelectorMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA3992C3EF78700F62CF6 /* SelectorMenuView.swift */; };
 		C6DFA39E2C3EF80300F62CF6 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA39D2C3EF80300F62CF6 /* SettingsViewController.swift */; };
+		C6DFA3AA2C3F01A400F62CF6 /* SourceSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA3A92C3F01A400F62CF6 /* SourceSelectorViewController.swift */; };
+		C6DFA3AC2C3F033E00F62CF6 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = C6DFA3AB2C3F033E00F62CF6 /* Kingfisher */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,10 +56,10 @@
 		C6DFA3792C3EF57300F62CF6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C6DFA37C2C3EF57300F62CF6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C6DFA37E2C3EF57300F62CF6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C6DFA3892C3EF6B600F62CF6 /* MemeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemeTableViewCell.swift; sourceTree = "<group>"; };
+		C6DFA3892C3EF6B600F62CF6 /* MemeViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemeViewCell.swift; sourceTree = "<group>"; };
 		C6DFA38B2C3EF71000F62CF6 /* MemeApiHandler.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MemeApiHandler.xcodeproj; path = MemeApiHandler/MemeApiHandler.xcodeproj; sourceTree = "<group>"; };
-		C6DFA3992C3EF78700F62CF6 /* SelectorMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectorMenuView.swift; sourceTree = "<group>"; };
 		C6DFA39D2C3EF80300F62CF6 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		C6DFA3A92C3F01A400F62CF6 /* SourceSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceSelectorViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,7 +67,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C6DFA3972C3EF74E00F62CF6 /* Kingfisher in Frameworks */,
+				C6DFA3AC2C3F033E00F62CF6 /* Kingfisher in Frameworks */,
 				C6DFA3922C3EF73100F62CF6 /* MemeApiHandler.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -99,7 +99,6 @@
 				C6DFA3732C3EF57100F62CF6 /* Main.storyboard */,
 				C6DFA37B2C3EF57300F62CF6 /* LaunchScreen.storyboard */,
 				C6DFA3842C3EF57900F62CF6 /* Controllers */,
-				C6DFA3982C3EF76100F62CF6 /* Subviews */,
 				C6DFA36D2C3EF57100F62CF6 /* AppDelegate.swift */,
 				C6DFA36F2C3EF57100F62CF6 /* SceneDelegate.swift */,
 				C6DFA3792C3EF57300F62CF6 /* Assets.xcassets */,
@@ -112,6 +111,7 @@
 		C6DFA3842C3EF57900F62CF6 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				C6DFA3A82C3F018A00F62CF6 /* SourceSelector */,
 				C6DFA39C2C3EF7E700F62CF6 /* Settings */,
 				C6DFA39B2C3EF7B800F62CF6 /* TableView */,
 			);
@@ -133,19 +133,11 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		C6DFA3982C3EF76100F62CF6 /* Subviews */ = {
-			isa = PBXGroup;
-			children = (
-				C6DFA3992C3EF78700F62CF6 /* SelectorMenuView.swift */,
-			);
-			path = Subviews;
-			sourceTree = "<group>";
-		};
 		C6DFA39B2C3EF7B800F62CF6 /* TableView */ = {
 			isa = PBXGroup;
 			children = (
 				C6DFA3712C3EF57100F62CF6 /* MemeTableViewController.swift */,
-				C6DFA3892C3EF6B600F62CF6 /* MemeTableViewCell.swift */,
+				C6DFA3892C3EF6B600F62CF6 /* MemeViewCell.swift */,
 			);
 			path = TableView;
 			sourceTree = "<group>";
@@ -156,6 +148,14 @@
 				C6DFA39D2C3EF80300F62CF6 /* SettingsViewController.swift */,
 			);
 			path = Settings;
+			sourceTree = "<group>";
+		};
+		C6DFA3A82C3F018A00F62CF6 /* SourceSelector */ = {
+			isa = PBXGroup;
+			children = (
+				C6DFA3A92C3F01A400F62CF6 /* SourceSelectorViewController.swift */,
+			);
+			path = SourceSelector;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -176,7 +176,7 @@
 			);
 			name = MemeShuffler;
 			packageProductDependencies = (
-				C6DFA3962C3EF74E00F62CF6 /* Kingfisher */,
+				C6DFA3AB2C3F033E00F62CF6 /* Kingfisher */,
 			);
 			productName = MemeShuffler;
 			productReference = C6DFA36A2C3EF57100F62CF6 /* MemeShuffler.app */;
@@ -254,8 +254,8 @@
 			files = (
 				C6DFA3782C3EF57100F62CF6 /* MemeShuffler.xcdatamodeld in Sources */,
 				C6DFA3722C3EF57100F62CF6 /* MemeTableViewController.swift in Sources */,
-				C6DFA39A2C3EF78700F62CF6 /* SelectorMenuView.swift in Sources */,
-				C6DFA38A2C3EF6B600F62CF6 /* MemeTableViewCell.swift in Sources */,
+				C6DFA3AA2C3F01A400F62CF6 /* SourceSelectorViewController.swift in Sources */,
+				C6DFA38A2C3EF6B600F62CF6 /* MemeViewCell.swift in Sources */,
 				C6DFA39E2C3EF80300F62CF6 /* SettingsViewController.swift in Sources */,
 				C6DFA36E2C3EF57100F62CF6 /* AppDelegate.swift in Sources */,
 				C6DFA3702C3EF57100F62CF6 /* SceneDelegate.swift in Sources */,
@@ -504,7 +504,7 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		C6DFA3962C3EF74E00F62CF6 /* Kingfisher */ = {
+		C6DFA3AB2C3F033E00F62CF6 /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C6DFA3952C3EF74E00F62CF6 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;

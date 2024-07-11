@@ -13,7 +13,8 @@ class MemeTableViewController: UIViewController {
 
     //Outlets
     @IBOutlet private weak var tableView: UITableView!
-    @IBOutlet weak var settingsButton: UIBarButtonItem!
+    @IBOutlet private weak var sourceSelectorButton: UIBarButtonItem!
+    @IBOutlet private weak var customizeButton: UIBarButtonItem!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,24 +38,24 @@ extension MemeTableViewController {
     }
     
     private func configureNavigationbar() {
-        
-    }
-    
-    @objc private func showMenu() {
-        let selectorMenuView = SelectorMenuView()
-            
-        self.view.addSubview(selectorMenuView)
+        sourceSelectorButton.title = "From: template"
+        customizeButton.title = "Customize"
     }
     
     private func configureTableView() {
         //Table behavior
         tableView.dataSource = self
         tableView.delegate = self
-        //Registering custom Cell
-        tableView.register(MemeTableViewCell.self, forCellReuseIdentifier: "Cell")
         //Customizing table style
-        tableView.separatorStyle = .none
         tableView.backgroundColor = UIColor.systemGray6
+        tableView.separatorStyle = .none
+        //Registering custom Cell
+        tableView.register(MemeViewCell.self, forCellReuseIdentifier: "memeCell")
+    }
+    
+    //Image setup
+    func configureMemeCell(_ cell: MemeViewCell, with content: String) -> MemeViewCell {
+        return cell.configureDefault()
     }
 }
 
@@ -74,7 +75,8 @@ extension MemeTableViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! MemeTableViewCell
+        var cell = tableView.dequeueReusableCell(withIdentifier: "memeCell", for: indexPath) as! MemeViewCell
+        cell = configureMemeCell(cell, with: "")
         return cell
     }
     
