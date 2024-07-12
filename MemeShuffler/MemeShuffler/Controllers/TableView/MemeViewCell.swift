@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 //MARK: - Lifecycle
 class MemeViewCell: UITableViewCell {
@@ -26,7 +27,7 @@ class MemeViewCell: UITableViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20))
+        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 5, left: 15, bottom: 5, right: 15))
     }
 }
 
@@ -38,6 +39,7 @@ extension MemeViewCell {
         contentView.layer.cornerRadius = 10
         contentView.layer.masksToBounds = true
         backgroundColor = .clear
+        selectionStyle = .none
         
         memeImageView = UIImageView()
         memeImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -54,13 +56,18 @@ extension MemeViewCell {
         memeImageView.clipsToBounds = true
     }
     
-    func configureWith(meme: String) -> MemeViewCell {
-        return self
+    func configureWith(url: String) {
+        if let imageUrl = URL(string: url) {
+            let loadingPlaceholder = UIImage(named: "loadingPlaceholder")
+            memeImageView.kf.indicatorType = .activity
+            memeImageView.kf.setImage(with: imageUrl, placeholder: loadingPlaceholder)
+        } else {
+            memeImageView.image = UIImage(named: "ErrorImagePlaceholder")
+        }
     }
     
     //Default image setup
-    func configureDefault() -> MemeViewCell {
-        memeImageView.image = UIImage(named: "ErrorImageTemplate")
-        return self
+    func configureDefault() {
+        memeImageView.image = UIImage(named: "ErrorImagePlaceholder")
     }
 }

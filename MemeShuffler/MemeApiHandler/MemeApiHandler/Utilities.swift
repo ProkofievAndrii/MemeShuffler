@@ -17,7 +17,7 @@ struct Root: Codable {
 public struct Meme: Codable {
     let postLink: String
     let subreddit, title: String
-    let url: String
+    public let url: String
     let nsfw, spoiler: Bool
     let author: String
     let ups: Int

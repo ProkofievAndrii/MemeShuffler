@@ -15,59 +15,57 @@ public class MemeApiManager {
     private static var currentTask: URLSessionDataTask?
     
     //MARK: - API request
-    private static func requestMemesPortion(completion: @escaping ([Meme]?, Error?) -> Void) {
-        var components = URLComponents(string: "https://meme-api.com/gimme")!
-        components.path += "/\(parameters.getSubredditName())/\(parameters.getQuantity())"
-        
-        guard let url = components.url else {
-            completion(nil, URLError(.badURL))
-            return
-        }
-        
-        currentTask?.cancel()
-        currentTask = URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error as? URLError, error.code != .cancelled {
-                print("Error fetching data: \(error.localizedDescription)")
-                completion(nil, error)
+    private static func requestMemesPortion(page: Int, completion: @escaping ([Meme]?, Error?) -> Void) {
+            var components = URLComponents(string: "https://meme-api.com/gimme")!
+            components.path += "/\(parameters.getSubredditName())/\(parameters.getQuantity())"
+            
+            guard let url = components.url else {
+                completion(nil, URLError(.badURL))
                 return
             }
             
-            guard let data = data else {
-                completion(nil, URLError(.badServerResponse))
-                return
+            currentTask?.cancel()
+            currentTask = URLSession.shared.dataTask(with: url) { data, response, error in
+                if let error = error as? URLError, error.code != .cancelled {
+                    print("Error fetching data: \(error.localizedDescription)")
+                    completion(nil, error)
+                    return
+                }
+                
+                guard let data = data else {
+                    completion(nil, URLError(.badServerResponse))
+                    return
+                }
+                
+                do {
+                    let decoder = JSONDecoder()
+                    let memeResponse = try decoder.decode(Root.self, from: data)
+                    completion(memeResponse.memes, nil)
+                } catch {
+                    print("Error decoding JSON: \(error.localizedDescription)")
+                    completion(nil, error)
+                }
             }
-            
-            do {
-                let decoder = JSONDecoder()
-                let memeResponse = try decoder.decode(Root.self, from: data)
-                completion(memeResponse.memes, nil)
-            } catch {
-                print("Error decoding JSON: \(error.localizedDescription)")
-                completion(nil, error)
-            }
+            currentTask?.resume()
         }
-        currentTask?.resume()
-    }
 
     //MARK: - Public methods for external usage
     //Request endpoint realization
-    public static func loadMemesCompilation(completion: @escaping ([Meme]?) -> Void) {
-        requestMemesPortion { memes, error in
-            if let error = error {
-                print("Failed to load memes: \(error.localizedDescription)")
-                completion(nil)
-                return
-            }
-            
-            if let memes = memes {
-                print("Loaded \(memes.count) memes")
-                completion(memes)
-            } else {
-                print("Failed to load memes")
-                completion(nil)
+        public static func loadMemesCompilation(page: Int = 1, completion: @escaping ([Meme]?) -> Void) {
+            requestMemesPortion(page: page) { memes, error in
+                if let error = error {
+                    print("Failed to load memes: \(error.localizedDescription)")
+                    completion(nil)
+                    return
+                }
+                
+                if let memes = memes {
+                    completion(memes)
+                } else {
+                    completion(nil)
+                }
             }
         }
-    }
     
     // Parameters Getters/Setters
     public static func getSubredditName() -> String {
