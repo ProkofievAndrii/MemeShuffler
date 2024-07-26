@@ -13,6 +13,7 @@ class ApiParametersManager {
     //Variables
     private var subredditName: String = String()
     private var quantity: Int = Int()
+    private var after: String? = nil
     
     //Getters/Setters
     func getSubredditName() -> String {
@@ -31,5 +32,14 @@ class ApiParametersManager {
     func setQuantity(_ newQuantity: Int) {
         guard newQuantity >= 0 else { return }
         quantity = newQuantity
+    }
+    
+    func getAfter() -> String? {
+        return after
+    }
+    
+    func setAfter(_ newAfter: String) {
+        guard !newAfter.isEmpty else { return }
+        after = newAfter
     }
 }

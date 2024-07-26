@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		C6DFA36E2C3EF57100F62CF6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA36D2C3EF57100F62CF6 /* AppDelegate.swift */; };
 		C6DFA3702C3EF57100F62CF6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA36F2C3EF57100F62CF6 /* SceneDelegate.swift */; };
-		C6DFA3722C3EF57100F62CF6 /* MemeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA3712C3EF57100F62CF6 /* MemeTableViewController.swift */; };
+		C6DFA3722C3EF57100F62CF6 /* MemeTableVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA3712C3EF57100F62CF6 /* MemeTableVC.swift */; };
 		C6DFA3752C3EF57100F62CF6 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = C6DFA3742C3EF57100F62CF6 /* Base */; };
 		C6DFA3782C3EF57100F62CF6 /* MemeShuffler.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA3762C3EF57100F62CF6 /* MemeShuffler.xcdatamodeld */; };
 		C6DFA37A2C3EF57300F62CF6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C6DFA3792C3EF57300F62CF6 /* Assets.xcassets */; };
@@ -17,7 +17,7 @@
 		C6DFA38A2C3EF6B600F62CF6 /* MemeViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA3892C3EF6B600F62CF6 /* MemeViewCell.swift */; };
 		C6DFA3922C3EF73100F62CF6 /* MemeApiHandler.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6DFA3902C3EF71000F62CF6 /* MemeApiHandler.framework */; };
 		C6DFA3932C3EF73100F62CF6 /* MemeApiHandler.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C6DFA3902C3EF71000F62CF6 /* MemeApiHandler.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		C6DFA39E2C3EF80300F62CF6 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA39D2C3EF80300F62CF6 /* SettingsViewController.swift */; };
+		C6DFA39E2C3EF80300F62CF6 /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA39D2C3EF80300F62CF6 /* SettingsVC.swift */; };
 		C6DFA3AA2C3F01A400F62CF6 /* SourceSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA3A92C3F01A400F62CF6 /* SourceSelectorViewController.swift */; };
 		C6DFA3AC2C3F033E00F62CF6 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = C6DFA3AB2C3F033E00F62CF6 /* Kingfisher */; };
 /* End PBXBuildFile section */
@@ -50,7 +50,7 @@
 		C6DFA36A2C3EF57100F62CF6 /* MemeShuffler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MemeShuffler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6DFA36D2C3EF57100F62CF6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C6DFA36F2C3EF57100F62CF6 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		C6DFA3712C3EF57100F62CF6 /* MemeTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemeTableViewController.swift; sourceTree = "<group>"; };
+		C6DFA3712C3EF57100F62CF6 /* MemeTableVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemeTableVC.swift; sourceTree = "<group>"; };
 		C6DFA3742C3EF57100F62CF6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C6DFA3772C3EF57100F62CF6 /* MemeShuffler.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MemeShuffler.xcdatamodel; sourceTree = "<group>"; };
 		C6DFA3792C3EF57300F62CF6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -58,7 +58,7 @@
 		C6DFA37E2C3EF57300F62CF6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C6DFA3892C3EF6B600F62CF6 /* MemeViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemeViewCell.swift; sourceTree = "<group>"; };
 		C6DFA38B2C3EF71000F62CF6 /* MemeApiHandler.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MemeApiHandler.xcodeproj; path = MemeApiHandler/MemeApiHandler.xcodeproj; sourceTree = "<group>"; };
-		C6DFA39D2C3EF80300F62CF6 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		C6DFA39D2C3EF80300F62CF6 /* SettingsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsVC.swift; sourceTree = "<group>"; };
 		C6DFA3A92C3F01A400F62CF6 /* SourceSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceSelectorViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -136,7 +136,7 @@
 		C6DFA39B2C3EF7B800F62CF6 /* TableView */ = {
 			isa = PBXGroup;
 			children = (
-				C6DFA3712C3EF57100F62CF6 /* MemeTableViewController.swift */,
+				C6DFA3712C3EF57100F62CF6 /* MemeTableVC.swift */,
 				C6DFA3892C3EF6B600F62CF6 /* MemeViewCell.swift */,
 			);
 			path = TableView;
@@ -145,7 +145,7 @@
 		C6DFA39C2C3EF7E700F62CF6 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				C6DFA39D2C3EF80300F62CF6 /* SettingsViewController.swift */,
+				C6DFA39D2C3EF80300F62CF6 /* SettingsVC.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -253,10 +253,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				C6DFA3782C3EF57100F62CF6 /* MemeShuffler.xcdatamodeld in Sources */,
-				C6DFA3722C3EF57100F62CF6 /* MemeTableViewController.swift in Sources */,
+				C6DFA3722C3EF57100F62CF6 /* MemeTableVC.swift in Sources */,
 				C6DFA3AA2C3F01A400F62CF6 /* SourceSelectorViewController.swift in Sources */,
 				C6DFA38A2C3EF6B600F62CF6 /* MemeViewCell.swift in Sources */,
-				C6DFA39E2C3EF80300F62CF6 /* SettingsViewController.swift in Sources */,
+				C6DFA39E2C3EF80300F62CF6 /* SettingsVC.swift in Sources */,
 				C6DFA36E2C3EF57100F62CF6 /* AppDelegate.swift in Sources */,
 				C6DFA3702C3EF57100F62CF6 /* SceneDelegate.swift in Sources */,
 			);

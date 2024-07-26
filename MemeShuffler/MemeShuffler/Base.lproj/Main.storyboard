@@ -8,10 +8,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Meme Table View Controller-->
+        <!--Meme TableVC-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="MemeTableViewController" customModule="MemeShuffler" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="MemeTableVC" customModule="MemeShuffler" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -53,32 +53,57 @@
                     </view>
                     <navigationItem key="navigationItem" id="3ml-lY-0Tg">
                         <nil key="title"/>
-                        <barButtonItem key="leftBarButtonItem" id="dwu-4L-qS0">
-                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="lFh-LH-jkm">
-                                <rect key="frame" x="16" y="5" width="139" height="34.333333333333336"/>
+                        <barButtonItem key="leftBarButtonItem" id="T2M-Nu-Us6">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="DqY-Gi-N9V">
+                                <rect key="frame" x="16" y="5" width="87.666666666666671" height="34.333333333333336"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="gray" title="From: template"/>
+                                <buttonConfiguration key="configuration" style="gray" title="Selector"/>
                             </button>
+                            <connections>
+                                <action selector="modeSelectorButtonPressed:" destination="BYZ-38-t0r" id="caN-mK-hWU"/>
+                            </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" id="9d5-u9-PKe">
-                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="DLP-zr-TQi">
+                        <barButtonItem key="rightBarButtonItem" title="Item" id="lyF-Vf-fqo">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="qg7-kd-PRL">
                                 <rect key="frame" x="272" y="5" width="105" height="34.333333333333336"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="gray" title="Customize" subtitle=""/>
+                                <buttonConfiguration key="configuration" style="gray" title="Customize"/>
+                                <connections>
+                                    <action selector="settingsButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="9d1-nA-7Yx"/>
+                                </connections>
                             </button>
+                            <connections>
+                                <segue destination="7pg-X8-eCh" kind="show" identifier="settingsSegue" id="z9a-vI-vWW"/>
+                            </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="customizeButton" destination="9d5-u9-PKe" id="R3w-gr-gn4"/>
-                        <outlet property="sourceSelectorButton" destination="dwu-4L-qS0" id="8jM-NJ-JB5"/>
+                        <outlet property="modeSelectButton" destination="T2M-Nu-Us6" id="rDI-bj-jQh"/>
+                        <outlet property="settingsButton" destination="lyF-Vf-fqo" id="DDg-Re-YZo"/>
                         <outlet property="tableView" destination="Ic4-0b-uVn" id="ECb-95-msl"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1038.9312977099237" y="-2.1126760563380285"/>
+        </scene>
+        <!--SettingsVC-->
+        <scene sceneID="Alc-v6-PlD">
+            <objects>
+                <viewController id="7pg-X8-eCh" customClass="SettingsVC" customModule="MemeShuffler" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="DES-Cv-GTd">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="GMs-bh-lON"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="nvS-8H-ldD"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="v9i-Np-oPe" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1940" y="-2"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="VCU-mV-Rgx">

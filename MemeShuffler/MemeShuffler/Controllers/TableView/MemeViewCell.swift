@@ -1,11 +1,5 @@
-//
-//  MemeTableViewCell.swift
-//  MemeShuffler
-//
-//  Created by Andrii Prokofiev on 10.07.2024.
-//
-
 import UIKit
+import AVKit
 import Kingfisher
 
 //MARK: - Lifecycle
@@ -13,6 +7,8 @@ class MemeViewCell: UITableViewCell {
     
     //Outlets
     private var memeImageView: UIImageView!
+    private var player: AVPlayer?
+    private var playerLayer: AVPlayerLayer?
     
     //MARK: Overwritten methods
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -28,6 +24,18 @@ class MemeViewCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 5, left: 15, bottom: 5, right: 15))
+        playerLayer?.frame = contentView.bounds
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        memeImageView.kf.cancelDownloadTask()
+        memeImageView.image = nil
+        player?.pause()
+        playerLayer?.removeFromSuperlayer()
+        playerLayer = nil
+        player = nil
+        memeImageView.isHidden = false
     }
 }
 
@@ -56,18 +64,35 @@ extension MemeViewCell {
         memeImageView.clipsToBounds = true
     }
     
-    func configureWith(url: String) {
-        if let imageUrl = URL(string: url) {
-            let loadingPlaceholder = UIImage(named: "loadingPlaceholder")
-            memeImageView.kf.indicatorType = .activity
-            memeImageView.kf.setImage(with: imageUrl, placeholder: loadingPlaceholder)
-        } else {
-            memeImageView.image = UIImage(named: "ErrorImagePlaceholder")
-        }
+    //MARK: Configuration Types
+    //Custom image setup
+    func setupWithImage(url: URL) {
+        let loadingPlaceholder = UIImage(named: "loadingPlaceholder")
+        memeImageView.kf.indicatorType = .activity
+        memeImageView.kf.setImage(with: url, placeholder: loadingPlaceholder)
+        memeImageView.isHidden = false
+    }
+    
+    //Custom video setup
+    func setupWithVideo(url: URL) {
+        memeImageView.isHidden = true
+        player = AVPlayer(url: url)
+        playerLayer = AVPlayerLayer(player: player)
+        playerLayer?.videoGravity = .resizeAspect
+        playerLayer?.frame = contentView.bounds
+        contentView.layer.addSublayer(playerLayer!)
+        player?.play()
     }
     
     //Default image setup
-    func configureDefault() {
+    func setupDefault() {
         memeImageView.image = UIImage(named: "ErrorImagePlaceholder")
+        memeImageView.isHidden = false
+    }
+}
+
+extension MemeViewCell {
+    func accessPlayer() -> AVPlayer? {
+        return player
     }
 }
