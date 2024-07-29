@@ -1,16 +1,23 @@
+//
+//  MemeViewCell.swift
+//  MemeShuffler
+//
+//  Created by Andrii Prokofiev on 9.07.2024.
+//
+
 import UIKit
 import AVKit
 import Kingfisher
 
-//MARK: - Lifecycle
+// MARK: - Lifecycle
 class MemeViewCell: UITableViewCell {
     
-    //Outlets
+    // Outlets
     private var memeImageView: UIImageView!
     private var player: AVPlayer?
     private var playerLayer: AVPlayerLayer?
     
-    //MARK: Overwritten methods
+    // MARK: Overwritten methods
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupCell()
@@ -39,9 +46,9 @@ class MemeViewCell: UITableViewCell {
     }
 }
 
-//MARK: - Cell configuration
+// MARK: - Cell configuration
 extension MemeViewCell {
-    //Cell UI
+    // Cell UI
     private func setupCell() {
         contentView.backgroundColor = UIColor(named: "MemeBlockColor")
         contentView.layer.cornerRadius = 10
@@ -64,8 +71,7 @@ extension MemeViewCell {
         memeImageView.clipsToBounds = true
     }
     
-    //MARK: Configuration Types
-    //Custom image setup
+    // MARK: Configuration Types
     func setupWithImage(url: URL) {
         let loadingPlaceholder = UIImage(named: "loadingPlaceholder")
         memeImageView.kf.indicatorType = .activity
@@ -73,7 +79,6 @@ extension MemeViewCell {
         memeImageView.isHidden = false
     }
     
-    //Custom video setup
     func setupWithVideo(url: URL) {
         memeImageView.isHidden = true
         player = AVPlayer(url: url)
@@ -84,7 +89,10 @@ extension MemeViewCell {
         player?.play()
     }
     
-    //Default image setup
+    func prepareForVideo() {
+        memeImageView.isHidden = true
+    }
+    
     func setupDefault() {
         memeImageView.image = UIImage(named: "ErrorImagePlaceholder")
         memeImageView.isHidden = false

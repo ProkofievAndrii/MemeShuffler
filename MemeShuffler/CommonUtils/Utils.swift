@@ -10,14 +10,14 @@ import Foundation
 //MARK: Data structures for parsing
 //Nested structures (not being used)
 // MARK: - Welcome
-struct RedditResponce: Codable {
-    let data: ResponceData
+public struct RedditResponce: Codable {
+    public let data: ResponceData
 }
 
 // MARK: - WelcomeData
-struct ResponceData: Codable {
-    let after: String?
-    let children: [DataChild]
+public struct ResponceData: Codable {
+    public let after: String?
+    public let children: [DataChild]
 
     enum CodingKeys: String, CodingKey {
         case after
@@ -26,13 +26,14 @@ struct ResponceData: Codable {
 }
 
 // MARK: - Child
-struct DataChild: Codable {
-    let data: Meme
+public struct DataChild: Codable {
+    public let data: Meme
 }
 
 // MARK: - Meme
 public struct Meme: Codable {
-    let subreddit, authorFullname, title: String
+    let subreddit, title: String
+    let authorFullname: String?
     let downs, ups: Int
     public let postHint: String?
     let over18, spoiler: Bool

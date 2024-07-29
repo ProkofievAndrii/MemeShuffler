@@ -7,7 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C6DDE3742C581AA300A6DC29 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DDE3612C58181500A6DC29 /* SettingsManager.swift */; };
+		C658DF1A2C58444F00B2B670 /* CommonUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = C658DF192C58444F00B2B670 /* CommonUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C658DF1D2C58444F00B2B670 /* CommonUtils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C658DF172C58444F00B2B670 /* CommonUtils.framework */; };
+		C658DF1E2C58444F00B2B670 /* CommonUtils.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C658DF172C58444F00B2B670 /* CommonUtils.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C658DF232C58446A00B2B670 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C658DF222C58446A00B2B670 /* Utils.swift */; };
+		C658DF242C58448E00B2B670 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DDE3612C58181500A6DC29 /* SettingsManager.swift */; };
 		C6DFA36E2C3EF57100F62CF6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA36D2C3EF57100F62CF6 /* AppDelegate.swift */; };
 		C6DFA3702C3EF57100F62CF6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA36F2C3EF57100F62CF6 /* SceneDelegate.swift */; };
 		C6DFA3722C3EF57100F62CF6 /* MemeTableVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA3712C3EF57100F62CF6 /* MemeTableVC.swift */; };
@@ -24,6 +28,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		C658DF1B2C58444F00B2B670 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C6DFA3622C3EF57100F62CF6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C658DF162C58444F00B2B670;
+			remoteInfo = CommonUtils;
+		};
 		C6DFA38F2C3EF71000F62CF6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C6DFA38B2C3EF71000F62CF6 /* MemeApiHandler.xcodeproj */;
@@ -41,6 +52,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				C6DFA3932C3EF73100F62CF6 /* MemeApiHandler.framework in Embed Frameworks */,
+				C658DF1E2C58444F00B2B670 /* CommonUtils.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -48,7 +60,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		C6DDE3612C58181500A6DC29 /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
+		C658DF172C58444F00B2B670 /* CommonUtils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CommonUtils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C658DF192C58444F00B2B670 /* CommonUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonUtils.h; sourceTree = "<group>"; };
+		C658DF222C58446A00B2B670 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		C6DDE3612C58181500A6DC29 /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SettingsManager.swift; path = ../MemeShuffler/Controllers/Settings/SettingsManager.swift; sourceTree = "<group>"; };
 		C6DFA36A2C3EF57100F62CF6 /* MemeShuffler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MemeShuffler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6DFA36D2C3EF57100F62CF6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C6DFA36F2C3EF57100F62CF6 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -65,10 +80,18 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		C658DF142C58444F00B2B670 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C6DFA3672C3EF57100F62CF6 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C658DF1D2C58444F00B2B670 /* CommonUtils.framework in Frameworks */,
 				C6DFA3AC2C3F033E00F62CF6 /* Kingfisher in Frameworks */,
 				C6DFA3922C3EF73100F62CF6 /* MemeApiHandler.framework in Frameworks */,
 			);
@@ -77,11 +100,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C658DF182C58444F00B2B670 /* CommonUtils */ = {
+			isa = PBXGroup;
+			children = (
+				C6DDE3612C58181500A6DC29 /* SettingsManager.swift */,
+				C658DF192C58444F00B2B670 /* CommonUtils.h */,
+				C658DF222C58446A00B2B670 /* Utils.swift */,
+			);
+			path = CommonUtils;
+			sourceTree = "<group>";
+		};
 		C6DFA3612C3EF57100F62CF6 = {
 			isa = PBXGroup;
 			children = (
 				C6DFA38B2C3EF71000F62CF6 /* MemeApiHandler.xcodeproj */,
 				C6DFA36C2C3EF57100F62CF6 /* MemeShuffler */,
+				C658DF182C58444F00B2B670 /* CommonUtils */,
 				C6DFA36B2C3EF57100F62CF6 /* Products */,
 				C6DFA3912C3EF73100F62CF6 /* Frameworks */,
 			);
@@ -91,6 +125,7 @@
 			isa = PBXGroup;
 			children = (
 				C6DFA36A2C3EF57100F62CF6 /* MemeShuffler.app */,
+				C658DF172C58444F00B2B670 /* CommonUtils.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -147,7 +182,6 @@
 		C6DFA39C2C3EF7E700F62CF6 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				C6DDE3612C58181500A6DC29 /* SettingsManager.swift */,
 				C6DFA39D2C3EF80300F62CF6 /* SettingsVC.swift */,
 			);
 			path = Settings;
@@ -163,7 +197,36 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		C658DF122C58444F00B2B670 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C658DF1A2C58444F00B2B670 /* CommonUtils.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
+		C658DF162C58444F00B2B670 /* CommonUtils */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C658DF1F2C58444F00B2B670 /* Build configuration list for PBXNativeTarget "CommonUtils" */;
+			buildPhases = (
+				C658DF122C58444F00B2B670 /* Headers */,
+				C658DF132C58444F00B2B670 /* Sources */,
+				C658DF142C58444F00B2B670 /* Frameworks */,
+				C658DF152C58444F00B2B670 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CommonUtils;
+			productName = CommonUtils;
+			productReference = C658DF172C58444F00B2B670 /* CommonUtils.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		C6DFA3692C3EF57100F62CF6 /* MemeShuffler */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C6DFA3812C3EF57300F62CF6 /* Build configuration list for PBXNativeTarget "MemeShuffler" */;
@@ -176,6 +239,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				C658DF1C2C58444F00B2B670 /* PBXTargetDependency */,
 			);
 			name = MemeShuffler;
 			packageProductDependencies = (
@@ -195,6 +259,10 @@
 				LastSwiftUpdateCheck = 1540;
 				LastUpgradeCheck = 1540;
 				TargetAttributes = {
+					C658DF162C58444F00B2B670 = {
+						CreatedOnToolsVersion = 15.4;
+						LastSwiftMigration = 1540;
+					};
 					C6DFA3692C3EF57100F62CF6 = {
 						CreatedOnToolsVersion = 15.4;
 					};
@@ -223,6 +291,7 @@
 			projectRoot = "";
 			targets = (
 				C6DFA3692C3EF57100F62CF6 /* MemeShuffler */,
+				C658DF162C58444F00B2B670 /* CommonUtils */,
 			);
 		};
 /* End PBXProject section */
@@ -238,6 +307,13 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		C658DF152C58444F00B2B670 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C6DFA3682C3EF57100F62CF6 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -251,6 +327,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		C658DF132C58444F00B2B670 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C658DF242C58448E00B2B670 /* SettingsManager.swift in Sources */,
+				C658DF232C58446A00B2B670 /* Utils.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C6DFA3662C3EF57100F62CF6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -259,7 +344,6 @@
 				C6DFA3722C3EF57100F62CF6 /* MemeTableVC.swift in Sources */,
 				C6DFA3AA2C3F01A400F62CF6 /* SourceSelectorVC.swift in Sources */,
 				C6DFA38A2C3EF6B600F62CF6 /* MemeViewCell.swift in Sources */,
-				C6DDE3742C581AA300A6DC29 /* SettingsManager.swift in Sources */,
 				C6DFA39E2C3EF80300F62CF6 /* SettingsVC.swift in Sources */,
 				C6DFA36E2C3EF57100F62CF6 /* AppDelegate.swift in Sources */,
 				C6DFA3702C3EF57100F62CF6 /* SceneDelegate.swift in Sources */,
@@ -267,6 +351,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C658DF1C2C58444F00B2B670 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C658DF162C58444F00B2B670 /* CommonUtils */;
+			targetProxy = C658DF1B2C58444F00B2B670 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		C6DFA3732C3EF57100F62CF6 /* Main.storyboard */ = {
@@ -288,6 +380,79 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		C658DF202C58444F00B2B670 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 8A4724G76B;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = ua.edu.ukma.Prokofiev.CommonUtils;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		C658DF212C58444F00B2B670 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 8A4724G76B;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = ua.edu.ukma.Prokofiev.CommonUtils;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		C6DFA37F2C3EF57300F62CF6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -478,6 +643,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		C658DF1F2C58444F00B2B670 /* Build configuration list for PBXNativeTarget "CommonUtils" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C658DF202C58444F00B2B670 /* Debug */,
+				C658DF212C58444F00B2B670 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C6DFA3652C3EF57100F62CF6 /* Build configuration list for PBXProject "MemeShuffler" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

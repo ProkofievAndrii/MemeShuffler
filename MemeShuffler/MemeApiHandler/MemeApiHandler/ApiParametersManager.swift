@@ -6,14 +6,16 @@
 //
 
 import Foundation
+import CommonUtils
 
 //MARK: - API handling
 //Parameters manager for API request
 class ApiParametersManager {
     //Variables
-    private var subredditName: String = "deadbydaylight"
-    private var quantity: Int = 10
+    private var subredditName: String = SettingsManager.defaultSubreddit
+    private var quantity: Int = SettingsManager.defaultLoadingQuantity
     private var after: String? = nil
+    private var isInitial = true
     
     //Getters/Setters
     func getSubredditName() -> String {
@@ -40,5 +42,13 @@ class ApiParametersManager {
     
     func setAfter(_ newAfter: String?) {
         after = newAfter
+    }
+    
+    func isInitialRequest() -> Bool {
+        return isInitial
+    }
+    
+    func setInitial(_ value: Bool) {
+        isInitial = value
     }
 }

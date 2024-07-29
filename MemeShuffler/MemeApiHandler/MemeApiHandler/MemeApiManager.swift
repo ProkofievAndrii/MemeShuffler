@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CommonUtils
 
 public class MemeApiManager {
     
@@ -20,7 +21,8 @@ public class MemeApiManager {
         let quantity = parameters.getQuantity()
         let after = parameters.getAfter()
         
-        var components = URLComponents(string: "https://www.reddit.com/r/\(subreddit)/top.json?limit=\(quantity)")!
+        var components = URLComponents(string: "https://www.reddit.com/r/\(subreddit)/hot.json?limit=\(quantity)")!
+        guard after != nil || isInitialRequest() else { return }
         if after != nil {
             components.queryItems?.append(URLQueryItem(name: "after", value: after))
         }
@@ -29,6 +31,8 @@ public class MemeApiManager {
             completion(nil, URLError(.badURL))
             return
         }
+
+        print(url)
         
         URLSession.shared.dataTask(with: url) { data, _, error in
             if let error = error {
@@ -37,6 +41,8 @@ public class MemeApiManager {
                 return
             }
             
+            setInitial(false)
+            
             guard let data = data else {
                 completion(nil, URLError(.badServerResponse))
                 return
@@ -44,10 +50,10 @@ public class MemeApiManager {
             
             do {
                 let redditResponse = try JSONDecoder().decode(RedditResponce.self, from: data)
-                parameters.setAfter(redditResponse.data.after ?? String())
                 let memes = redditResponse.data.children.map { $0.data }.filter {
                     $0.postHint == "image" || $0.postHint == "hosted:video"
                 }
+                setAfter(redditResponse.data.after)
                 completion(memes, nil)
             } catch {
                 print("Error decoding JSON: \(error.localizedDescription)")
@@ -98,5 +104,13 @@ public class MemeApiManager {
     
     public static func setAfter(_ newAfter: String?) {
         parameters.setAfter(newAfter)
+    }
+    
+    public static func isInitialRequest() -> Bool {
+        return parameters.isInitialRequest()
+    }
+    
+    public static func setInitial(_ value: Bool) {
+        parameters.setInitial(value)
     }
 }

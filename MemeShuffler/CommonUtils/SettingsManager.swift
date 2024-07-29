@@ -1,6 +1,6 @@
 //
 //  SettingsManager.swift
-//  MemeShuffler
+//  CommonUtils
 //
 //  Created by Andrii Prokofiev on 29.07.2024.
 //
@@ -15,6 +15,7 @@ public class SettingsManager {
         static let showFullMemeInfo = "showFullMemeInfo"
         static let showCensoredOrSpoilers = "showCensoredOrSpoilers"
         static let autoplayVids = "autoplayVids"
+        static let requestMode = "requestMode"
     }
     
     public static var defaultSubreddit: String {
@@ -59,6 +60,16 @@ public class SettingsManager {
         }
         set {
             UserDefaults.standard.set(newValue, forKey: Keys.autoplayVids)
+        }
+    }
+    
+    
+    public static var requestMode: Int {
+        get {
+            return UserDefaults.standard.integer(forKey: Keys.requestMode)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: Keys.requestMode)
         }
     }
 }

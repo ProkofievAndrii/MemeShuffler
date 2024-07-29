@@ -10,7 +10,6 @@
 		C64587092C3FE1C2002719FB /* ApiParametersManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C64587082C3FE1C2002719FB /* ApiParametersManager.swift */; };
 		C66D1D3D2C39ADFC00C32D91 /* MemeApiHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = C66D1D3C2C39ADFC00C32D91 /* MemeApiHandler.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C66D1D442C39AE0D00C32D91 /* MemeApiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66D1D432C39AE0D00C32D91 /* MemeApiManager.swift */; };
-		C66D1D462C39AE3200C32D91 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66D1D452C39AE3200C32D91 /* Utilities.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -18,7 +17,6 @@
 		C66D1D392C39ADFC00C32D91 /* MemeApiHandler.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MemeApiHandler.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C66D1D3C2C39ADFC00C32D91 /* MemeApiHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MemeApiHandler.h; sourceTree = "<group>"; };
 		C66D1D432C39AE0D00C32D91 /* MemeApiManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemeApiManager.swift; sourceTree = "<group>"; };
-		C66D1D452C39AE3200C32D91 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,7 +52,6 @@
 				C66D1D3C2C39ADFC00C32D91 /* MemeApiHandler.h */,
 				C66D1D432C39AE0D00C32D91 /* MemeApiManager.swift */,
 				C64587082C3FE1C2002719FB /* ApiParametersManager.swift */,
-				C66D1D452C39AE3200C32D91 /* Utilities.swift */,
 			);
 			path = MemeApiHandler;
 			sourceTree = "<group>";
@@ -139,7 +136,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C66D1D462C39AE3200C32D91 /* Utilities.swift in Sources */,
 				C64587092C3FE1C2002719FB /* ApiParametersManager.swift in Sources */,
 				C66D1D442C39AE0D00C32D91 /* MemeApiManager.swift in Sources */,
 			);
