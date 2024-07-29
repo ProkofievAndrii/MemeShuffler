@@ -8,14 +8,15 @@ class MemeTableVC: UIViewController {
 
     //Outlets
     @IBOutlet private weak var tableView: UITableView!
-    @IBOutlet private weak var modeSelectButton: UIBarButtonItem!
-    @IBOutlet private weak var settingsButton: UIBarButtonItem!
-    
+    @IBOutlet private weak var modeSelectButton: UIButton!
+    @IBOutlet private weak var settingsButton: UIButton!
+
     //Const values
     struct Const {
         //For in-app navigation
         static let cellReuseId = "memeCell"
         static let settingsSegueID = "settingsSegue"
+        static let memeSegueID = "memeSegue"
         //For cell configuration
         static let defaultCellHeight: CGFloat = 200
     }
@@ -28,25 +29,34 @@ class MemeTableVC: UIViewController {
     //Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadPhotos()
         configureUI()
+        loadMemes()
     }
 }
 
 //MARK: - API Manager Request
 extension MemeTableVC {
     //Request endpoint
-    private func loadPhotos() {
+    private func loadMemes() {
         configureApiParameters()
-        execureRequest()
+        executeRequest()
     }
     
     private func configureApiParameters() {
-        MemeApiManager.setSubredditName(Subreddits.deadbydaylight.rawValue)
-        MemeApiManager.setQuantity(10)
+        MemeApiManager.setQuantity(MemeApiManager.getQuantity())
+        MemeApiManager.setSubredditName(MemeApiManager.getSubredditName())
     }
     
-    private func execureRequest() {
+    private func updateMemes(with subreddit: String) {
+        MemeApiManager.setSubredditName(subreddit)
+        MemeApiManager.setAfter(nil)
+        memes.removeAll()
+        cellHeights.removeAll()
+        tableView.reloadData()
+        loadMemes()
+    }
+    
+    private func executeRequest() {
         isLoading = true
         MemeApiManager.loadMemesCompilation { memes in
             if let memes = memes {
@@ -60,6 +70,16 @@ extension MemeTableVC {
     }
 }
 
+extension MemeTableVC: SelectionDelegate {
+    func didSelectSubreddit(_ subreddit: String) {
+        updateMemes(with: subreddit)
+    }
+    
+    func didSelectOption(_ option: String) {
+        
+    }
+}
+
 //MARK: - UI Configuration
 extension MemeTableVC {
     private func configureUI() {
@@ -68,8 +88,8 @@ extension MemeTableVC {
     }
     
     private func configureNavigationbar() {
-        modeSelectButton.title = "Selector"
-        settingsButton.title = "Customize"
+        modeSelectButton.titleLabel?.text = "Selector"
+        settingsButton.titleLabel?.text  = "Customize"
     }
     
     private func configureTableView() {
@@ -100,7 +120,7 @@ extension MemeTableVC: UITableViewDelegate {
         
         if offsetY > contentHeight - height - (1 * Const.defaultCellHeight) {
             guard !isLoading else { return }
-            loadPhotos()
+            loadMemes()
         }
     }
 }
@@ -183,12 +203,25 @@ extension MemeTableVC {
 
 //MARK: - Navigation
 extension MemeTableVC {
-
-    @IBAction func modeSelectorButtonPressed(_ sender: Any) {
-        // Handle mode selector button press
+    
+    @IBAction func selectorModeButtonTapped(_ sender: UIButton) {
+        let selectorVC = SourceSelectorVC()
+        selectorVC.delegate = self // Устанавливаем делегата
+        let navController = UINavigationController(rootViewController: selectorVC)
+        navController.modalPresentationStyle = .popover
+        
+        if let popoverController = navController.popoverPresentationController {
+            popoverController.delegate = self
+            popoverController.sourceView = sender
+            popoverController.sourceRect = CGRect(x: sender.bounds.midX, y: sender.bounds.maxY, width: 0, height: 0)
+            popoverController.permittedArrowDirections = .up
+        }
+        
+        present(navController, animated: true, completion: nil)
+        
     }
     
-    @IBAction func settingsButtonPressed(_ sender: Any) {
+    @IBAction func settingsButtonTapped(_ sender: UIButton) {
         self.performSegue(withIdentifier: Const.settingsSegueID, sender: nil)
     }
     
@@ -198,5 +231,12 @@ extension MemeTableVC {
             let _ = segue.destination as! SettingsVC
         default: break
         }
+    }
+}
+
+//MARK: - Popover VC presentation
+extension MemeTableVC: UIPopoverPresentationControllerDelegate {
+    func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
+        return UIDevice.current.userInterfaceIdiom == .pad ? .popover : .none
     }
 }

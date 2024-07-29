@@ -91,4 +91,12 @@ public class MemeApiManager {
     public static func setQuantity(_ newQuantity: Int) {
         parameters.setQuantity(newQuantity)
     }
+    
+    public static func getAfter() -> String? {
+        return parameters.getAfter()
+    }
+    
+    public static func setAfter(_ newAfter: String?) {
+        parameters.setAfter(newAfter)
+    }
 }

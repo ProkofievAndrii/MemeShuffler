@@ -53,16 +53,16 @@
                     </view>
                     <navigationItem key="navigationItem" id="3ml-lY-0Tg">
                         <nil key="title"/>
-                        <barButtonItem key="leftBarButtonItem" id="T2M-Nu-Us6">
-                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="DqY-Gi-N9V">
+                        <barButtonItem key="leftBarButtonItem" id="YTm-OT-WMj">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="obN-YZ-dQt">
                                 <rect key="frame" x="16" y="5" width="87.666666666666671" height="34.333333333333336"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="gray" title="Selector"/>
+                                <buttonConfiguration key="configuration" style="gray" title="Selector" titleAlignment="center"/>
+                                <connections>
+                                    <action selector="selectorModeButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="DNX-8J-L5g"/>
+                                </connections>
                             </button>
-                            <connections>
-                                <action selector="modeSelectorButtonPressed:" destination="BYZ-38-t0r" id="caN-mK-hWU"/>
-                            </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Item" id="lyF-Vf-fqo">
                             <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="qg7-kd-PRL">
@@ -71,17 +71,17 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="gray" title="Customize"/>
                                 <connections>
-                                    <action selector="settingsButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="9d1-nA-7Yx"/>
+                                    <action selector="settingsButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zhl-qj-yM6"/>
                                 </connections>
                             </button>
                             <connections>
-                                <segue destination="7pg-X8-eCh" kind="show" identifier="settingsSegue" id="z9a-vI-vWW"/>
+                                <segue destination="7pg-X8-eCh" kind="show" identifier="settingsSegue" id="aXc-Wl-TV3"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="modeSelectButton" destination="T2M-Nu-Us6" id="rDI-bj-jQh"/>
-                        <outlet property="settingsButton" destination="lyF-Vf-fqo" id="DDg-Re-YZo"/>
+                        <outlet property="modeSelectButton" destination="obN-YZ-dQt" id="LIc-3s-pC6"/>
+                        <outlet property="settingsButton" destination="qg7-kd-PRL" id="3Md-CI-J8w"/>
                         <outlet property="tableView" destination="Ic4-0b-uVn" id="ECb-95-msl"/>
                     </connections>
                 </viewController>

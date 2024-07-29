@@ -11,8 +11,8 @@ import Foundation
 //Parameters manager for API request
 class ApiParametersManager {
     //Variables
-    private var subredditName: String = String()
-    private var quantity: Int = Int()
+    private var subredditName: String = "deadbydaylight"
+    private var quantity: Int = 10
     private var after: String? = nil
     
     //Getters/Setters
@@ -38,8 +38,7 @@ class ApiParametersManager {
         return after
     }
     
-    func setAfter(_ newAfter: String) {
-        guard !newAfter.isEmpty else { return }
+    func setAfter(_ newAfter: String?) {
         after = newAfter
     }
 }
