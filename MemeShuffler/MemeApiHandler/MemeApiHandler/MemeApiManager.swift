@@ -20,8 +20,9 @@ public class MemeApiManager {
         let subreddit = parameters.getSubredditName()
         let quantity = parameters.getQuantity()
         let after = parameters.getAfter()
+        let filter = parameters.getFilter().lowercased()
         
-        var components = URLComponents(string: "https://www.reddit.com/r/\(subreddit)/hot.json?limit=\(quantity)")!
+        var components = URLComponents(string: "https://www.reddit.com/r/\(subreddit)/\(filter).json?limit=\(quantity)")!
         guard after != nil || isInitialRequest() else { return }
         if after != nil {
             components.queryItems?.append(URLQueryItem(name: "after", value: after))
@@ -31,12 +32,10 @@ public class MemeApiManager {
             completion(nil, URLError(.badURL))
             return
         }
-
-        print(url)
         
         URLSession.shared.dataTask(with: url) { data, _, error in
             if let error = error {
-                print("Error fetching data: \(error.localizedDescription)")
+                print("Error fetching data: \(error)")
                 completion(nil, error)
                 return
             }
@@ -104,6 +103,14 @@ public class MemeApiManager {
     
     public static func setAfter(_ newAfter: String?) {
         parameters.setAfter(newAfter)
+    }
+    
+    public static func getFilter() -> String {
+        return parameters.getFilter()
+    }
+    
+    public static func setFilter(_ filter: String) {
+        parameters.setFilter(filter)
     }
     
     public static func isInitialRequest() -> Bool {

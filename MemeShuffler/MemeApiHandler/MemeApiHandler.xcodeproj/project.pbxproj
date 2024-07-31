@@ -7,12 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C6004F262C598A500053219C /* CommonUtils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6004F252C598A500053219C /* CommonUtils.framework */; };
+		C6004F272C598A500053219C /* CommonUtils.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C6004F252C598A500053219C /* CommonUtils.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C64587092C3FE1C2002719FB /* ApiParametersManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C64587082C3FE1C2002719FB /* ApiParametersManager.swift */; };
 		C66D1D3D2C39ADFC00C32D91 /* MemeApiHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = C66D1D3C2C39ADFC00C32D91 /* MemeApiHandler.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C66D1D442C39AE0D00C32D91 /* MemeApiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C66D1D432C39AE0D00C32D91 /* MemeApiManager.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		C6004F282C598A500053219C /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				C6004F272C598A500053219C /* CommonUtils.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		C6004F252C598A500053219C /* CommonUtils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CommonUtils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C64587082C3FE1C2002719FB /* ApiParametersManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiParametersManager.swift; sourceTree = "<group>"; };
 		C66D1D392C39ADFC00C32D91 /* MemeApiHandler.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MemeApiHandler.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C66D1D3C2C39ADFC00C32D91 /* MemeApiHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MemeApiHandler.h; sourceTree = "<group>"; };
@@ -24,17 +41,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C6004F262C598A500053219C /* CommonUtils.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C6004F242C598A500053219C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C6004F252C598A500053219C /* CommonUtils.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		C66D1D2F2C39ADFC00C32D91 = {
 			isa = PBXGroup;
 			children = (
 				C66D1D3B2C39ADFC00C32D91 /* MemeApiHandler */,
 				C66D1D3A2C39ADFC00C32D91 /* Products */,
+				C6004F242C598A500053219C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -78,6 +105,7 @@
 				C66D1D352C39ADFC00C32D91 /* Sources */,
 				C66D1D362C39ADFC00C32D91 /* Frameworks */,
 				C66D1D372C39ADFC00C32D91 /* Resources */,
+				C6004F282C598A500053219C /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

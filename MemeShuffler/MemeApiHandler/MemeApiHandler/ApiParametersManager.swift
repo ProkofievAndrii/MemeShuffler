@@ -15,6 +15,7 @@ class ApiParametersManager {
     private var subredditName: String = SettingsManager.defaultSubreddit
     private var quantity: Int = SettingsManager.defaultLoadingQuantity
     private var after: String? = nil
+    private var filter: String = Filters.top.rawValue
     private var isInitial = true
     
     //Getters/Setters
@@ -42,6 +43,14 @@ class ApiParametersManager {
     
     func setAfter(_ newAfter: String?) {
         after = newAfter
+    }
+    
+    func getFilter() -> String {
+        return filter
+    }
+    
+    func setFilter(_ newFilter: String) {
+        filter = newFilter
     }
     
     func isInitialRequest() -> Bool {

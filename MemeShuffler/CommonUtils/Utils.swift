@@ -9,12 +9,10 @@ import Foundation
 
 //MARK: Data structures for parsing
 //Nested structures (not being used)
-// MARK: - Welcome
 public struct RedditResponce: Codable {
     public let data: ResponceData
 }
 
-// MARK: - WelcomeData
 public struct ResponceData: Codable {
     public let after: String?
     public let children: [DataChild]
@@ -25,12 +23,10 @@ public struct ResponceData: Codable {
     }
 }
 
-// MARK: - Child
 public struct DataChild: Codable {
     public let data: Meme
 }
 
-// MARK: - Meme
 public struct Meme: Codable {
     let subreddit, title: String
     let authorFullname: String?
@@ -59,7 +55,6 @@ public struct Meme: Codable {
     }
 }
 
-// MARK: - SecureMedia
 public struct SecureMedia: Codable {
     public let redditVideo: RedditVideo?
 
@@ -68,7 +63,6 @@ public struct SecureMedia: Codable {
     }
 }
 
-// MARK: - RedditVideo
 public struct RedditVideo: Codable {
     public let height, width: Int
     public let fallbackUrl: URL
@@ -79,20 +73,19 @@ public struct RedditVideo: Codable {
     }
 }
 
-//MARK: - Utils
+//MARK: - Enums
 //Enumeration containing default subreddit cases used by application
-public enum Subreddits: String, CaseIterable {
-    //Cases
+public enum Subreddits: String, CaseIterable, EnumConvertible {
     case angryupvote = "angryupvote"
     case blursedimages = "blursedimages"
     case cursedcomments = "cursedcomments"
     case deadbydaylight = "deadbydaylight"
     case greentext = "greentext"
+    case memes = "memes"
     case shitposting = "shitposting"
     
-    //Functions
     public static func getRandomSubreddit() -> Subreddits {
-        return Subreddits.allCases.randomElement() ?? .deadbydaylight
+        return Subreddits.allCases.randomElement() ?? .memes
     }
     
     public static func getRandomSubredditGroup(subredditNum: Int) -> [Subreddits] {
@@ -106,5 +99,32 @@ public enum Subreddits: String, CaseIterable {
         }
         
         return Array(chosenSubreddits)
+    }
+}
+
+public enum Filters: String, CaseIterable, EnumConvertible {
+    case top = "Top"
+    case hot = "Hot"
+    case new = "New"
+}
+
+public enum Options: String, CaseIterable, EnumConvertible {
+    case randomSet = "Random set"
+    case savedLocally = "Saved locally"
+}
+
+//MARK: - Enum case/value convertion protocol
+public protocol EnumConvertible: RawRepresentable, CaseIterable where RawValue: Equatable {
+    static func caseFromValue(_ value: RawValue) -> Self?
+}
+
+public extension EnumConvertible {
+    static func caseFromValue(_ value: RawValue) -> Self? {
+        for currCase in Self.allCases {
+            if currCase.rawValue == value {
+                return currCase
+            }
+        }
+        return nil
     }
 }

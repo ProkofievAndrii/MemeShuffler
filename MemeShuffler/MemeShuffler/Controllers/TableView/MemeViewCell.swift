@@ -50,7 +50,7 @@ class MemeViewCell: UITableViewCell {
 extension MemeViewCell {
     // Cell UI
     private func setupCell() {
-        contentView.backgroundColor = UIColor(named: "MemeBlockColor")
+        contentView.backgroundColor = UIColor(named: "MemeBlockBackground")
         contentView.layer.cornerRadius = 10
         contentView.layer.masksToBounds = true
         backgroundColor = .clear

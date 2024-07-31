@@ -20,10 +20,13 @@ class MemeTableVC: UIViewController {
 
     // Const values
     struct Const {
+        //Navigation
         static let cellReuseId = "memeCell"
         static let settingsSegueID = "settingsSegue"
         static let memeSegueID = "memeSegue"
+        //UI scaling
         static let defaultCellHeight: CGFloat = 200
+        static let navigationButtonsWidth: CGFloat = 80
     }
 
     // Variables
@@ -39,7 +42,7 @@ class MemeTableVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        SettingsManager.defaultSubreddit = "HentaiBeast"
+        SettingsManager.defaultSubreddit = "memes"
         SettingsManager.defaultLoadingQuantity = 20
         configureUI()
         loadMemes()
@@ -58,15 +61,6 @@ extension MemeTableVC {
         MemeApiManager.setSubredditName(MemeApiManager.getSubredditName())
     }
 
-    private func updateMemes(with subreddit: String) {
-        MemeApiManager.setSubredditName(subreddit)
-        MemeApiManager.setInitial(true)
-        MemeApiManager.setAfter(nil)
-        memes.removeAll()
-        cellHeights.removeAll()
-        loadMemes()
-    }
-
     private func executeRequest() {
         isLoading = true
         MemeApiManager.loadMemesCompilation { memes in
@@ -76,15 +70,40 @@ extension MemeTableVC {
             self.isLoading = false
         }
     }
+    
+    private func resetApiState() {
+        MemeApiManager.setInitial(true)
+        MemeApiManager.setAfter(nil)
+        memes.removeAll()
+        cellHeights.removeAll()
+    }
+    
+    private func updatedMemeRequest() {
+        resetApiState()
+        loadMemes()
+    }
+    
+    private func optionalMemeRequest(_ option: String) {
+        resetApiState()
+        
+    }
 }
 
 extension MemeTableVC: SelectionDelegate {
     func didSelectSubreddit(_ subreddit: String) {
-        updateMemes(with: subreddit)
+        MemeApiManager.setSubredditName(subreddit)
+        self.title = "r/\(subreddit)"
+        updatedMemeRequest()
     }
-
+    
     func didSelectOption(_ option: String) {
-        // Handle options selection
+        self.title = "\(option)"
+        print(option)
+    }
+    
+    func didSelectFilter(_ filter: String) {
+        MemeApiManager.setFilter(filter)
+        updatedMemeRequest()
     }
 }
 
@@ -96,8 +115,15 @@ extension MemeTableVC {
     }
 
     private func configureNavigationbar() {
-        modeSelectButton.titleLabel?.text = "Selector"
-        settingsButton.titleLabel?.text = "Customize"
+        self.title = "r/\(SettingsManager.defaultSubreddit)"
+        modeSelectButton.setImage(UIImage(systemName: "list.bullet.clipboard.fill"), for: .normal)
+        settingsButton.setImage(UIImage(systemName: "gearshape.2.fill"), for: .normal)
+        
+        //Setting similar button width
+        NSLayoutConstraint.activate([
+            modeSelectButton.widthAnchor.constraint(equalToConstant: Const.navigationButtonsWidth),
+            settingsButton.widthAnchor.constraint(equalToConstant: Const.navigationButtonsWidth)
+        ])
     }
 
     private func configureTableView() {
@@ -130,12 +156,12 @@ extension MemeTableVC: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if let memeCell = cell as? MemeViewCell, let meme = memes[indexPath.row] as? Meme {
-            if let urlString = meme.urlString, let url = URL(string: urlString) {
-                if meme.postHint == "hosted:video", let redditVideo = meme.secureMedia?.redditVideo {
-                    let videoUrl = redditVideo.fallbackUrl
-                    memeCell.setupWithVideo(url: videoUrl)
-                }
+        let memeCell = cell as? MemeViewCell
+        let meme = memes[indexPath.row]
+        if meme.urlString != nil {
+            if meme.postHint == "hosted:video", let redditVideo = meme.secureMedia?.redditVideo {
+                let videoUrl = redditVideo.fallbackUrl
+                memeCell?.setupWithVideo(url: videoUrl)
             }
         }
     }

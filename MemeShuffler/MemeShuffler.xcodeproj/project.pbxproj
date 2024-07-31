@@ -148,7 +148,7 @@
 		C6DFA3842C3EF57900F62CF6 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				C6DFA3A82C3F018A00F62CF6 /* SourceSelector */,
+				C6DFA3A82C3F018A00F62CF6 /* Selectors */,
 				C6DFA39C2C3EF7E700F62CF6 /* Settings */,
 				C6DFA39B2C3EF7B800F62CF6 /* TableView */,
 			);
@@ -187,12 +187,12 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
-		C6DFA3A82C3F018A00F62CF6 /* SourceSelector */ = {
+		C6DFA3A82C3F018A00F62CF6 /* Selectors */ = {
 			isa = PBXGroup;
 			children = (
 				C6DFA3A92C3F01A400F62CF6 /* SourceSelectorVC.swift */,
 			);
-			path = SourceSelector;
+			path = Selectors;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
