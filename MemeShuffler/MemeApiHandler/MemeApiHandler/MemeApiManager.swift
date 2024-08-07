@@ -49,8 +49,11 @@ public class MemeApiManager {
             
             do {
                 let redditResponse = try JSONDecoder().decode(RedditResponce.self, from: data)
-                let memes = redditResponse.data.children.map { $0.data }.filter {
-                    $0.postHint == "image" || $0.postHint == "hosted:video"
+                let memes = redditResponse.data.children.map { $0.data }.filter { post in
+                    let containsImageOrVideo = (post.postHint == "image" || post.postHint == "hosted:video")
+                    let censorePassed = (SettingsManager.showCensoredPosts || !post.over18)
+                    let spoilerPassed = (SettingsManager.showSpoilerPosts || !post.spoiler)
+                    return containsImageOrVideo && censorePassed && spoilerPassed
                 }
                 setAfter(redditResponse.data.after)
                 completion(memes, nil)

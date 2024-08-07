@@ -148,7 +148,7 @@
 		C6DFA3842C3EF57900F62CF6 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				C6DFA3A82C3F018A00F62CF6 /* Selectors */,
+				C6DFA3A82C3F018A00F62CF6 /* SourceSelector */,
 				C6DFA39C2C3EF7E700F62CF6 /* Settings */,
 				C6DFA39B2C3EF7B800F62CF6 /* TableView */,
 			);
@@ -187,12 +187,12 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
-		C6DFA3A82C3F018A00F62CF6 /* Selectors */ = {
+		C6DFA3A82C3F018A00F62CF6 /* SourceSelector */ = {
 			isa = PBXGroup;
 			children = (
 				C6DFA3A92C3F01A400F62CF6 /* SourceSelectorVC.swift */,
 			);
-			path = Selectors;
+			path = SourceSelector;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -275,6 +275,9 @@
 			knownRegions = (
 				en,
 				Base,
+				uk,
+				ru,
+				pl,
 			);
 			mainGroup = C6DFA3612C3EF57100F62CF6;
 			packageReferences = (
@@ -583,6 +586,7 @@
 				DEVELOPMENT_TEAM = 8A4724G76B;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MemeShuffler/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MemeShuffler;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -617,6 +621,7 @@
 				DEVELOPMENT_TEAM = 8A4724G76B;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MemeShuffler/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MemeShuffler;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;

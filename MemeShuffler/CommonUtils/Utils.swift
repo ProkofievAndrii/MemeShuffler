@@ -32,7 +32,7 @@ public struct Meme: Codable {
     let authorFullname: String?
     let downs, ups: Int
     public let postHint: String?
-    let over18, spoiler: Bool
+    public let over18, spoiler: Bool
     let id, author: String
     let numComments: Int
     let permalink: String
@@ -66,10 +66,12 @@ public struct SecureMedia: Codable {
 public struct RedditVideo: Codable {
     public let height, width: Int
     public let fallbackUrl: URL
+    public let dashUrl: URL
     
     enum CodingKeys: String, CodingKey {
         case height, width
         case fallbackUrl = "fallback_url"
+        case dashUrl = "dash_url"
     }
 }
 
@@ -82,6 +84,7 @@ public enum Subreddits: String, CaseIterable, EnumConvertible {
     case deadbydaylight = "deadbydaylight"
     case greentext = "greentext"
     case memes = "memes"
+    case memevideos = "memevideos"
     case shitposting = "shitposting"
     
     public static func getRandomSubreddit() -> Subreddits {
@@ -102,15 +105,25 @@ public enum Subreddits: String, CaseIterable, EnumConvertible {
     }
 }
 
+public enum Options: String, CaseIterable, EnumConvertible {
+    case randomSet = "Random set"
+    case savedLocally = "Saved locally"
+}
+
 public enum Filters: String, CaseIterable, EnumConvertible {
     case top = "Top"
     case hot = "Hot"
     case new = "New"
 }
 
-public enum Options: String, CaseIterable, EnumConvertible {
-    case randomSet = "Random set"
-    case savedLocally = "Saved locally"
+public enum Themes: String, CaseIterable, EnumConvertible {
+    case light = "Light"
+    case dark = "Dark"
+}
+
+public enum Languages: String, CaseIterable, EnumConvertible {
+    case english = "English"
+    case ukrainian = "Ukrainian"
 }
 
 //MARK: - Enum case/value convertion protocol

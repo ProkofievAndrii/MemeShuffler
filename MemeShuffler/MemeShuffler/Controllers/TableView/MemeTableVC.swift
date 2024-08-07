@@ -20,11 +20,11 @@ class MemeTableVC: UIViewController {
 
     // Const values
     struct Const {
-        //Navigation
+        // Navigation
         static let cellReuseId = "memeCell"
         static let settingsSegueID = "settingsSegue"
         static let memeSegueID = "memeSegue"
-        //UI scaling
+        // UI scaling
         static let defaultCellHeight: CGFloat = 200
         static let navigationButtonsWidth: CGFloat = 80
     }
@@ -37,15 +37,34 @@ class MemeTableVC: UIViewController {
             }
         }
     }
-    private var cellHeights: [IndexPath: CGFloat] = [:]
+    
+    private var cellHeights: [IndexPath: CGFloat] = [:] {
+        didSet {
+            DispatchQueue.main.async {
+                self.tableView.beginUpdates()
+                self.tableView.endUpdates()
+            }
+        }
+    }
+    
     private var isLoading = false
-
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         SettingsManager.defaultSubreddit = "memes"
         SettingsManager.defaultLoadingQuantity = 20
         configureUI()
         loadMemes()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        overrideUserInterfaceStyle = SettingsManager.interfaceTheme == 0 ? .light : .dark
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
     }
 }
 
@@ -55,7 +74,7 @@ extension MemeTableVC {
         configureApiParameters()
         executeRequest()
     }
-
+    
     private func configureApiParameters() {
         MemeApiManager.setQuantity(MemeApiManager.getQuantity())
         MemeApiManager.setSubredditName(MemeApiManager.getSubredditName())
@@ -63,11 +82,14 @@ extension MemeTableVC {
 
     private func executeRequest() {
         isLoading = true
-        MemeApiManager.loadMemesCompilation { memes in
-            if let memes = memes {
-                self.memes.append(contentsOf: memes)
+        MemeApiManager.loadMemesCompilation { [weak self] memes in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                if let memes = memes {
+                    self.memes.append(contentsOf: memes)
+                }
+                self.isLoading = false
             }
-            self.isLoading = false
         }
     }
     
@@ -85,7 +107,6 @@ extension MemeTableVC {
     
     private func optionalMemeRequest(_ option: String) {
         resetApiState()
-        
     }
 }
 
@@ -162,7 +183,12 @@ extension MemeTableVC: UITableViewDelegate {
             if meme.postHint == "hosted:video", let redditVideo = meme.secureMedia?.redditVideo {
                 let videoUrl = redditVideo.fallbackUrl
                 memeCell?.setupWithVideo(url: videoUrl)
+            } else if meme.postHint == "image" {
+                let url = URL(string: meme.urlString ?? "")
+                memeCell?.setupWithImage(url: url!)
             }
+        } else {
+            memeCell?.setupDefault()
         }
     }
 }
@@ -183,8 +209,13 @@ extension MemeTableVC: UITableViewDataSource {
                 adjustCellUsingImage(cell: cell, indexPath: indexPath, url: url)
                 cell.setupWithImage(url: url)
             case "hosted:video":
-                // Prepare for lazy loading of video
-                cell.prepareForVideo()
+                guard let redditVideo = meme.secureMedia?.redditVideo else {
+                    cell.setupDefault()
+                    return cell
+                }
+                adjustCellUsingVideo(cell: cell, indexPath: indexPath, url: url, using: redditVideo)
+                let videoUrl = URL(string: meme.urlString ?? "")
+                cell.setupWithVideo(url: videoUrl!)
             default:
                 cell.setupDefault()
             }
@@ -223,10 +254,6 @@ extension MemeTableVC {
         let aspectRatio = resolution.height / resolution.width
         let adjustedCellHeight = cell.frame.width * aspectRatio
         self.cellHeights[indexPath] = adjustedCellHeight
-        DispatchQueue.main.async {
-            self.tableView.beginUpdates()
-            self.tableView.endUpdates()
-        }
     }
 }
 

@@ -8,6 +8,7 @@
 import UIKit
 import AVKit
 import Kingfisher
+import CommonUtils
 
 // MARK: - Lifecycle
 class MemeViewCell: UITableViewCell {
@@ -16,6 +17,7 @@ class MemeViewCell: UITableViewCell {
     private var memeImageView: UIImageView!
     private var player: AVPlayer?
     private var playerLayer: AVPlayerLayer?
+    private var overlayView: UIView!
     
     // MARK: Overwritten methods
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -32,6 +34,7 @@ class MemeViewCell: UITableViewCell {
         super.layoutSubviews()
         contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 5, left: 15, bottom: 5, right: 15))
         playerLayer?.frame = contentView.bounds
+        overlayView.frame = contentView.bounds
     }
     
     override func prepareForReuse() {
@@ -43,12 +46,12 @@ class MemeViewCell: UITableViewCell {
         playerLayer = nil
         player = nil
         memeImageView.isHidden = false
+        overlayView.isHidden = true
     }
 }
 
 // MARK: - Cell configuration
 extension MemeViewCell {
-    // Cell UI
     private func setupCell() {
         contentView.backgroundColor = UIColor(named: "MemeBlockBackground")
         contentView.layer.cornerRadius = 10
@@ -56,22 +59,40 @@ extension MemeViewCell {
         backgroundColor = .clear
         selectionStyle = .none
         
-        memeImageView = UIImageView()
-        memeImageView.translatesAutoresizingMaskIntoConstraints = false
+        memeImageView = {
+            let imageView = UIImageView()
+            imageView.translatesAutoresizingMaskIntoConstraints = false
+            imageView.contentMode = .scaleAspectFit
+            imageView.clipsToBounds = true
+            return imageView
+        }()
+        
+        overlayView = {
+            let view = UIView()
+            view.backgroundColor = UIColor(white: 0, alpha: 1)
+            view.translatesAutoresizingMaskIntoConstraints = false
+            view.contentMode = .scaleAspectFit
+            view.clipsToBounds = true
+            view.isHidden = true
+            return view
+        }()
+        
         contentView.addSubview(memeImageView)
+        contentView.addSubview(overlayView)
         
         NSLayoutConstraint.activate([
             memeImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             memeImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             memeImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            memeImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            memeImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            
+            overlayView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            overlayView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            overlayView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            overlayView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
-        
-        memeImageView.contentMode = .scaleAspectFit
-        memeImageView.clipsToBounds = true
     }
     
-    // MARK: Configuration Types
     func setupWithImage(url: URL) {
         let loadingPlaceholder = UIImage(named: "loadingPlaceholder")
         memeImageView.kf.indicatorType = .activity
@@ -84,13 +105,14 @@ extension MemeViewCell {
         player = AVPlayer(url: url)
         playerLayer = AVPlayerLayer(player: player)
         playerLayer?.videoGravity = .resizeAspect
-        playerLayer?.frame = contentView.bounds
         contentView.layer.addSublayer(playerLayer!)
-        player?.play()
-    }
-    
-    func prepareForVideo() {
-        memeImageView.isHidden = true
+        playerLayer?.frame = contentView.bounds
+        if SettingsManager.allowVideoAutoplay {
+            player?.play()
+            overlayView.isHidden = true
+        } else {
+            overlayView.isHidden = false
+        }
     }
     
     func setupDefault() {

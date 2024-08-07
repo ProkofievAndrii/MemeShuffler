@@ -10,16 +10,79 @@ import Foundation
 public class SettingsManager {
     
     private enum Keys {
+        //User experience
+        static let showCensoredPosts = "showCensoredOrSpoilers"
+        static let showSpoilerPosts = "showSpoilerPosts"
+        static let allowVideoAutoplay = "allowVideoAutoplay"
+        //Appearance
+        static let interfaceTheme = "interfaceTheme"
+        static let interfaceLanguage = "interfaceLanguage"
+        static let showFullMemeInfo = "showFullMemeInfo"
+        //Data
         static let defaultSubreddit = "defaultSubreddit"
         static let defaultLoadingQuantity = "defaultLoadingQuantity"
-        static let showFullMemeInfo = "showFullMemeInfo"
-        static let showCensoredOrSpoilers = "showCensoredOrSpoilers"
-        static let autoplayVids = "autoplayVids"
     }
     
+    //MARK: User experience
+    public static var showCensoredPosts: Bool {
+        get {
+            return UserDefaults.standard.bool(forKey: Keys.showCensoredPosts)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: Keys.showCensoredPosts)
+        }
+    }
+    
+    public static var showSpoilerPosts: Bool {
+        get {
+            return UserDefaults.standard.bool(forKey: Keys.showSpoilerPosts)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: Keys.showSpoilerPosts)
+        }
+    }
+    
+    public static var allowVideoAutoplay: Bool {
+        get {
+            return UserDefaults.standard.bool(forKey: Keys.allowVideoAutoplay)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: Keys.allowVideoAutoplay)
+        }
+    }
+    
+    //MARK: Appearance
+    public static var interfaceTheme: Int {
+        get {
+            return UserDefaults.standard.integer(forKey: Keys.interfaceTheme)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: Keys.interfaceTheme)
+        }
+    }
+    
+    public static var interfaceLanguage: Int {
+        get {
+            return UserDefaults.standard.integer(forKey: Keys.interfaceLanguage)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: Keys.interfaceLanguage)
+        }
+    }
+    
+    public static var showFullPostInfo: Bool {
+        get {
+            return UserDefaults.standard.bool(forKey: Keys.showFullMemeInfo)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: Keys.showFullMemeInfo)
+        }
+    }
+    
+    //MARK: Data
     public static var defaultSubreddit: String {
         get {
-            return UserDefaults.standard.string(forKey: Keys.defaultSubreddit) ?? "memes"
+            return  UserDefaults.standard.string(forKey: Keys.defaultSubreddit) ?? "memes"
         }
         set {
             UserDefaults.standard.set(newValue, forKey: Keys.defaultSubreddit)
@@ -32,33 +95,6 @@ public class SettingsManager {
         }
         set {
             UserDefaults.standard.set(newValue, forKey: Keys.defaultLoadingQuantity)
-        }
-    }
-    
-    public static var showFullMemeInfo: Bool {
-        get {
-            return UserDefaults.standard.bool(forKey: Keys.showFullMemeInfo)
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: Keys.showFullMemeInfo)
-        }
-    }
-    
-    public static var showCensoredOrSpoilers: Bool {
-        get {
-            return UserDefaults.standard.bool(forKey: Keys.showCensoredOrSpoilers)
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: Keys.showCensoredOrSpoilers)
-        }
-    }
-    
-    public static var autoplayVids: Bool {
-        get {
-            return UserDefaults.standard.bool(forKey: Keys.autoplayVids)
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: Keys.autoplayVids)
         }
     }
 }
