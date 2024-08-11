@@ -49,7 +49,6 @@ class MemeTableVC: UIViewController {
     
     private var isLoading = false
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         SettingsManager.defaultSubreddit = "memes"
@@ -57,14 +56,43 @@ class MemeTableVC: UIViewController {
         configureUI()
         loadMemes()
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        overrideUserInterfaceStyle = SettingsManager.interfaceTheme == 0 ? .light : .dark
+}
+
+// MARK: - UI Configuration
+extension MemeTableVC {
+    private func configureUI() {
+        applyCurrentTheme()
+        configureNavigationbar()
+        configureTableView()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    private func applyCurrentTheme() {
+        overrideUserInterfaceStyle = SettingsManager.interfaceTheme == 0 ? .light : .dark
+    }
+
+    private func configureNavigationbar() {
+        self.title = "r/\(SettingsManager.defaultSubreddit)"
+        let titleColor: UIColor = SettingsManager.interfaceTheme == 0 ? .black : .white
+        navigationController?.navigationBar.titleTextAttributes = [
+            NSAttributedString.Key.foregroundColor: titleColor
+        ]
+        
+        modeSelectButton.setImage(UIImage(systemName: "list.bullet.clipboard.fill"), for: .normal)
+        settingsButton.setImage(UIImage(systemName: "gearshape.2.fill"), for: .normal)
+        
+        // Setting similar button width
+        NSLayoutConstraint.activate([
+            modeSelectButton.widthAnchor.constraint(equalToConstant: Const.navigationButtonsWidth),
+            settingsButton.widthAnchor.constraint(equalToConstant: Const.navigationButtonsWidth)
+        ])
+    }
+
+    private func configureTableView() {
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.backgroundColor = UIColor.systemGray6
+        tableView.separatorStyle = .none
+        tableView.register(MemeViewCell.self, forCellReuseIdentifier: Const.cellReuseId)
     }
 }
 
@@ -104,13 +132,10 @@ extension MemeTableVC {
         resetApiState()
         loadMemes()
     }
-    
-    private func optionalMemeRequest(_ option: String) {
-        resetApiState()
-    }
 }
 
-extension MemeTableVC: SelectionDelegate {
+// MARK: - Source Selection Delegate
+extension MemeTableVC: SourceSelectionDelegate {
     func didSelectSubreddit(_ subreddit: String) {
         MemeApiManager.setSubredditName(subreddit)
         self.title = "r/\(subreddit)"
@@ -128,31 +153,47 @@ extension MemeTableVC: SelectionDelegate {
     }
 }
 
-// MARK: - UI Configuration
+// MARK: - Settings Selection Delegate
+extension MemeTableVC: SettingsSelectionDelegate {
+    func didToggleTheme() {
+        applyCurrentTheme()
+    }
+    
+    func didToggleLanguage() {}
+}
+
+// MARK: - Navigation
 extension MemeTableVC {
-    private func configureUI() {
-        configureNavigationbar()
-        configureTableView()
+    @IBAction func selectorModeButtonTapped(_ sender: UIButton) {
+        let selectorVC = SourceSelectorVC()
+        selectorVC.delegate = self
+        selectorVC.settingsDelegate = self
+
+        let navController = UINavigationController(rootViewController: selectorVC)
+        navController.modalPresentationStyle = .popover
+
+        if let popoverController = navController.popoverPresentationController {
+            popoverController.delegate = self
+            popoverController.sourceView = sender
+            popoverController.sourceRect = CGRect(x: sender.bounds.midX, y: sender.bounds.maxY, width: 0, height: 0)
+            popoverController.permittedArrowDirections = .up
+        }
+
+        present(navController, animated: true, completion: nil)
     }
 
-    private func configureNavigationbar() {
-        self.title = "r/\(SettingsManager.defaultSubreddit)"
-        modeSelectButton.setImage(UIImage(systemName: "list.bullet.clipboard.fill"), for: .normal)
-        settingsButton.setImage(UIImage(systemName: "gearshape.2.fill"), for: .normal)
-        
-        //Setting similar button width
-        NSLayoutConstraint.activate([
-            modeSelectButton.widthAnchor.constraint(equalToConstant: Const.navigationButtonsWidth),
-            settingsButton.widthAnchor.constraint(equalToConstant: Const.navigationButtonsWidth)
-        ])
+    @IBAction func settingsButtonTapped(_ sender: UIButton) {
+        self.performSegue(withIdentifier: Const.settingsSegueID, sender: nil)
     }
 
-    private func configureTableView() {
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.backgroundColor = UIColor.systemGray6
-        tableView.separatorStyle = .none
-        tableView.register(MemeViewCell.self, forCellReuseIdentifier: Const.cellReuseId)
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        switch segue.identifier {
+        case Const.settingsSegueID:
+            if let settingsVC = segue.destination as? SettingsVC {
+                settingsVC.delegate = self
+            }
+        default: break
+        }
     }
 }
 
@@ -179,13 +220,20 @@ extension MemeTableVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let memeCell = cell as? MemeViewCell
         let meme = memes[indexPath.row]
-        if meme.urlString != nil {
-            if meme.postHint == "hosted:video", let redditVideo = meme.secureMedia?.redditVideo {
-                let videoUrl = redditVideo.fallbackUrl
-                memeCell?.setupWithVideo(url: videoUrl)
-            } else if meme.postHint == "image" {
-                let url = URL(string: meme.urlString ?? "")
-                memeCell?.setupWithImage(url: url!)
+        if let urlString = meme.urlString, let url = URL(string: urlString) {
+            switch meme.postHint {
+            case "image":
+                adjustCellUsingImage(cell: memeCell, indexPath: indexPath, url: url)
+                memeCell?.setupWithImage(url: url)
+            case "hosted:video":
+                guard let redditVideo = meme.secureMedia?.redditVideo else {
+                    memeCell?.setupDefault()
+                    return
+                }
+                adjustCellUsingVideo(cell: memeCell, indexPath: indexPath, url: url, using: redditVideo)
+                memeCell?.setupWithVideo(url: url)
+            default:
+                memeCell?.setupDefault()
             }
         } else {
             memeCell?.setupDefault()
@@ -202,8 +250,7 @@ extension MemeTableVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Const.cellReuseId, for: indexPath) as! MemeViewCell
         let meme = memes[indexPath.row]
-        let urlString = meme.urlString
-        if let url = URL(string: urlString ?? String()) {
+        if let urlString = meme.urlString, let url = URL(string: urlString) {
             switch meme.postHint {
             case "image":
                 adjustCellUsingImage(cell: cell, indexPath: indexPath, url: url)
@@ -214,8 +261,7 @@ extension MemeTableVC: UITableViewDataSource {
                     return cell
                 }
                 adjustCellUsingVideo(cell: cell, indexPath: indexPath, url: url, using: redditVideo)
-                let videoUrl = URL(string: meme.urlString ?? "")
-                cell.setupWithVideo(url: videoUrl!)
+                cell.setupWithVideo(url: url)
             default:
                 cell.setupDefault()
             }
@@ -228,7 +274,7 @@ extension MemeTableVC: UITableViewDataSource {
 
 // MARK: - Utils
 extension MemeTableVC {
-    private func adjustCellUsingImage(cell: MemeViewCell, indexPath: IndexPath, url: URL) {
+    private func adjustCellUsingImage(cell: MemeViewCell?, indexPath: IndexPath, url: URL) {
         KingfisherManager.shared.retrieveImage(with: url) { result in
             switch result {
             case .success(let value):
@@ -243,48 +289,17 @@ extension MemeTableVC {
         }
     }
 
-    private func adjustCellUsingVideo(cell: MemeViewCell, indexPath: IndexPath, url: URL, using mediaInfo: RedditVideo) {
+    private func adjustCellUsingVideo(cell: MemeViewCell?, indexPath: IndexPath, url: URL, using mediaInfo: RedditVideo) {
         let width = CGFloat(mediaInfo.width)
         let height = CGFloat(mediaInfo.height)
         let resolution = (width, height)
         self.adjustCellHeight(cell: cell, indexPath: indexPath, using: resolution)
     }
 
-    private func adjustCellHeight(cell: MemeViewCell, indexPath: IndexPath, using resolution: (width: CGFloat, height: CGFloat)) {
+    private func adjustCellHeight(cell: MemeViewCell?, indexPath: IndexPath, using resolution: (width: CGFloat, height: CGFloat)) {
         let aspectRatio = resolution.height / resolution.width
-        let adjustedCellHeight = cell.frame.width * aspectRatio
+        let adjustedCellHeight = cell?.frame.width ?? 0 * aspectRatio
         self.cellHeights[indexPath] = adjustedCellHeight
-    }
-}
-
-// MARK: - Navigation
-extension MemeTableVC {
-    @IBAction func selectorModeButtonTapped(_ sender: UIButton) {
-        let selectorVC = SourceSelectorVC()
-        selectorVC.delegate = self
-        let navController = UINavigationController(rootViewController: selectorVC)
-        navController.modalPresentationStyle = .popover
-
-        if let popoverController = navController.popoverPresentationController {
-            popoverController.delegate = self
-            popoverController.sourceView = sender
-            popoverController.sourceRect = CGRect(x: sender.bounds.midX, y: sender.bounds.maxY, width: 0, height: 0)
-            popoverController.permittedArrowDirections = .up
-        }
-
-        present(navController, animated: true, completion: nil)
-    }
-
-    @IBAction func settingsButtonTapped(_ sender: UIButton) {
-        self.performSegue(withIdentifier: Const.settingsSegueID, sender: nil)
-    }
-
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        switch segue.identifier {
-        case Const.settingsSegueID:
-            let _ = segue.destination as! SettingsVC
-        default: break
-        }
     }
 }
 

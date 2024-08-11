@@ -12,6 +12,7 @@
 		C658DF1E2C58444F00B2B670 /* CommonUtils.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C658DF172C58444F00B2B670 /* CommonUtils.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C658DF232C58446A00B2B670 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C658DF222C58446A00B2B670 /* Utils.swift */; };
 		C658DF242C58448E00B2B670 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DDE3612C58181500A6DC29 /* SettingsManager.swift */; };
+		C6B5E45B2C65685A00775906 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = C6B5E45A2C65685A00775906 /* Localizable.xcstrings */; };
 		C6DFA36E2C3EF57100F62CF6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA36D2C3EF57100F62CF6 /* AppDelegate.swift */; };
 		C6DFA3702C3EF57100F62CF6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA36F2C3EF57100F62CF6 /* SceneDelegate.swift */; };
 		C6DFA3722C3EF57100F62CF6 /* MemeTableVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DFA3712C3EF57100F62CF6 /* MemeTableVC.swift */; };
@@ -63,6 +64,7 @@
 		C658DF172C58444F00B2B670 /* CommonUtils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CommonUtils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C658DF192C58444F00B2B670 /* CommonUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonUtils.h; sourceTree = "<group>"; };
 		C658DF222C58446A00B2B670 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		C6B5E45A2C65685A00775906 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		C6DDE3612C58181500A6DC29 /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SettingsManager.swift; path = ../MemeShuffler/Controllers/Settings/SettingsManager.swift; sourceTree = "<group>"; };
 		C6DFA36A2C3EF57100F62CF6 /* MemeShuffler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MemeShuffler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6DFA36D2C3EF57100F62CF6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 				C6DFA36D2C3EF57100F62CF6 /* AppDelegate.swift */,
 				C6DFA36F2C3EF57100F62CF6 /* SceneDelegate.swift */,
 				C6DFA3792C3EF57300F62CF6 /* Assets.xcassets */,
+				C6B5E45A2C65685A00775906 /* Localizable.xcstrings */,
 				C6DFA37E2C3EF57300F62CF6 /* Info.plist */,
 				C6DFA3762C3EF57100F62CF6 /* MemeShuffler.xcdatamodeld */,
 			);
@@ -323,6 +326,7 @@
 			files = (
 				C6DFA37A2C3EF57300F62CF6 /* Assets.xcassets in Resources */,
 				C6DFA37D2C3EF57300F62CF6 /* Base in Resources */,
+				C6B5E45B2C65685A00775906 /* Localizable.xcstrings in Resources */,
 				C6DFA3752C3EF57100F62CF6 /* Base in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

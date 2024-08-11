@@ -16,7 +16,7 @@ public class SettingsManager {
         static let allowVideoAutoplay = "allowVideoAutoplay"
         //Appearance
         static let interfaceTheme = "interfaceTheme"
-        static let interfaceLanguage = "interfaceLanguage"
+        static let interfaceLanguage = "AppleLanguages"
         static let showFullMemeInfo = "showFullMemeInfo"
         //Data
         static let defaultSubreddit = "defaultSubreddit"
@@ -61,12 +61,12 @@ public class SettingsManager {
         }
     }
     
-    public static var interfaceLanguage: Int {
+    public static var interfaceLanguage: String {
         get {
-            return UserDefaults.standard.integer(forKey: Keys.interfaceLanguage)
+            return UserDefaults.standard.array(forKey: Keys.interfaceLanguage)?.first as? String ?? "en"
         }
         set {
-            UserDefaults.standard.set(newValue, forKey: Keys.interfaceLanguage)
+            UserDefaults.standard.set([newValue], forKey: Keys.interfaceLanguage)
         }
     }
     

@@ -6,13 +6,17 @@
 //
 
 import UIKit
-
 import MemeApiHandler
 import CommonUtils
 
 class SourceSelectorVC: UIViewController {
 
-    //Variables
+    // Outlets
+    private var filtersLabel: UILabel!
+    private var subredditLabel: UILabel!
+    private var optionsLabel: UILabel!
+    
+    // Variables
     private let subreddits = Subreddits.allCases
     private let options = Options.allCases
     private let filters = Filters.allCases
@@ -28,16 +32,13 @@ class SourceSelectorVC: UIViewController {
         static var optionScrollViewHeight: CGFloat = 0
     }
     
-    var delegate: SelectionDelegate?
+    var delegate: SourceSelectionDelegate?
+    weak var settingsDelegate: SettingsSelectionDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-
-        overrideUserInterfaceStyle = SettingsManager.interfaceTheme == 0 ? .light : .dark
+        applyCurrentTheme()
     }
     
     private func configureUI() {
@@ -45,9 +46,13 @@ class SourceSelectorVC: UIViewController {
         configureAppearance()
         configureElements()
     }
+    
+    private func applyCurrentTheme() {
+        overrideUserInterfaceStyle = SettingsManager.interfaceTheme == 0 ? .light : .dark
+    }
 }
 
-//MARK: - UI Parameters calculation
+// MARK: - UI Configuration
 extension SourceSelectorVC {
     private func calculateUIParameters() {
         calculateScrollViewSizes()
@@ -55,26 +60,23 @@ extension SourceSelectorVC {
     }
     
     private func calculateScrollViewSizes() {
-        //Subreddits
+        // Subreddits
         UIParameters.subredditScrollViewHeight = CGFloat(min(subreddits.count, UIParameters.maxVisibleScrollItems)) * (UIParameters.scrollItemHeight + UIParameters.scrollItemSpacing)
-        //Options
+        // Options
         UIParameters.optionScrollViewHeight = CGFloat(min(options.count, UIParameters.maxVisibleScrollItems)) * (UIParameters.scrollItemHeight + UIParameters.scrollItemSpacing)
     }
     
     private func calculateSelectorHeight() {
         UIParameters.selectorHeight = UIParameters.subredditScrollViewHeight + UIParameters.optionScrollViewHeight + 150
     }
-}
-
-//MARK: - Appearamce & Elements
-extension SourceSelectorVC {
+    
     private func configureAppearance() {
         view.backgroundColor = UIColor.selectorBackground
         modalPresentationStyle = .popover
         preferredContentSize = CGSize(width: UIParameters.selectorWidth, height: UIParameters.selectorHeight)
     }
    
-    //MARK: - Elements setup
+    // MARK: - Elements setup
     private func configureElements() {
         let mainStackView: UIStackView = {
             let stackView = UIStackView()
@@ -85,9 +87,9 @@ extension SourceSelectorVC {
             return stackView
         }()
         
-        let segmentFilterLabel: UILabel = {
+        filtersLabel = {
             let label = UILabel()
-            label.text = "Filter by:"
+            label.text = NSLocalizedString("filter_by", comment: "")
             label.font = UIFont.boldSystemFont(ofSize: 16)
             return label
         }()
@@ -112,10 +114,10 @@ extension SourceSelectorVC {
             return separator
         }()
        
-        //Subreddits
-        let subredditLabel: UILabel = {
+        // Subreddits
+        subredditLabel = {
             let label = UILabel()
-            label.text = "Saved subreddits:"
+            label.text = NSLocalizedString("saved_subreddits", comment: "")
             label.font = UIFont.boldSystemFont(ofSize: 16)
             return label
         }()
@@ -149,10 +151,10 @@ extension SourceSelectorVC {
         
         subredditScrollView.addSubview(subredditStackView)
         
-        //Options
-        let optionsLabel: UILabel = {
+        // Options
+        optionsLabel = {
             let label = UILabel()
-            label.text = "Other options:"
+            label.text = NSLocalizedString("other_options", comment: "")
             label.font = UIFont.boldSystemFont(ofSize: 16)
             return label
         }()
@@ -186,9 +188,9 @@ extension SourceSelectorVC {
         
         optionsScrollView.addSubview(optionsStackView)
         
-        //MARK: - Selector composition
+        // MARK: - Selector composition
         let viewsToAdd = [
-            segmentFilterLabel,
+            filtersLabel,
             segmentFilterControl,
             separatorLine,
             subredditLabel,
@@ -198,7 +200,7 @@ extension SourceSelectorVC {
         ]
         
         for view in viewsToAdd {
-            mainStackView.addArrangedSubview(view)
+            mainStackView.addArrangedSubview(view ?? UIView())
         }
         
         mainStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -230,7 +232,7 @@ extension SourceSelectorVC {
     }
 }
 
-//MARK: - Actions
+// MARK: - Actions
 extension SourceSelectorVC {
     @objc private func subredditButtonTapped(_ sender: UIButton) {
         guard let subredditName = sender.titleLabel?.text else { return }
@@ -251,7 +253,20 @@ extension SourceSelectorVC {
     }
 }
 
-protocol SelectionDelegate: AnyObject {
+// MARK: - SettingsSelectionDelegate
+extension SourceSelectorVC: SettingsSelectionDelegate {
+    func didToggleTheme() {
+        applyCurrentTheme()
+    }
+
+    func didToggleLanguage() {
+        filtersLabel.text = NSLocalizedString("filter_by", comment: "")
+        subredditLabel.text = NSLocalizedString("saved_subreddits", comment: "")
+        optionsLabel.text = NSLocalizedString("other_options", comment: "")
+    }
+}
+
+protocol SourceSelectionDelegate: AnyObject {
     func didSelectSubreddit(_ subreddit: String)
     func didSelectOption(_ option: String)
     func didSelectFilter(_ filter: String)

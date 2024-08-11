@@ -9,8 +9,6 @@ import UIKit
 
 class SelectorVC: UIViewController {
     override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = UIColor.green
-        preferredContentSize = CGSize(width: 200, height: 200)
+
     }
 }

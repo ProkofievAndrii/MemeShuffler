@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C6362AAE2C67F2DE00F730A8 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = C6362AAD2C67F2DE00F730A8 /* Localizable.xcstrings */; };
 		C65714472C566B790071E7D8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C65714462C566B790071E7D8 /* AppDelegate.swift */; };
 		C65714492C566B790071E7D8 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C65714482C566B790071E7D8 /* SceneDelegate.swift */; };
 		C657144B2C566B790071E7D8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C657144A2C566B790071E7D8 /* ViewController.swift */; };
@@ -17,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C6362AAD2C67F2DE00F730A8 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		C65714432C566B790071E7D8 /* Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Test.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C65714462C566B790071E7D8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C65714482C566B790071E7D8 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -66,6 +68,7 @@
 				C657144F2C566B7B0071E7D8 /* Assets.xcassets */,
 				C65714512C566B7B0071E7D8 /* LaunchScreen.storyboard */,
 				C65714542C566B7B0071E7D8 /* Info.plist */,
+				C6362AAD2C67F2DE00F730A8 /* Localizable.xcstrings */,
 			);
 			path = Test;
 			sourceTree = "<group>";
@@ -112,6 +115,8 @@
 			knownRegions = (
 				en,
 				Base,
+				vi,
+				uk,
 			);
 			mainGroup = C657143A2C566B780071E7D8;
 			productRefGroup = C65714442C566B790071E7D8 /* Products */;
@@ -130,6 +135,7 @@
 			files = (
 				C65714502C566B7B0071E7D8 /* Assets.xcassets in Resources */,
 				C65714532C566B7B0071E7D8 /* Base in Resources */,
+				C6362AAE2C67F2DE00F730A8 /* Localizable.xcstrings in Resources */,
 				C657144E2C566B790071E7D8 /* Base in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

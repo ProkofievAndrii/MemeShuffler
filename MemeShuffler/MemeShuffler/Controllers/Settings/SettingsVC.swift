@@ -10,52 +10,119 @@ import CommonUtils
 
 class SettingsVC: UIViewController {
     
-    //MARK: Outlets
-    //General
+    // MARK: - Outlets
+    // General
     @IBOutlet private weak var settingsStackView: UIStackView!
-    //User experience segment
+    // User experience segment
     @IBOutlet private weak var userExperienceToggleButton: UIButton!
     @IBOutlet private weak var userExperienceSubview: UIView!
+    @IBOutlet private weak var showCensoredPostsLabel: UILabel!
+    @IBOutlet private weak var showSpoilersLabel: UILabel!
+    @IBOutlet private weak var autoplayVideosLabel: UILabel!
     @IBOutlet private weak var censoreSwitch: UISwitch!
     @IBOutlet private weak var spoilerSwitch: UISwitch!
     @IBOutlet private weak var autoplaySwitch: UISwitch!
-    //Appearance segment
+    // Appearance segment
     @IBOutlet private weak var appearanceToggleButton: UIButton!
     @IBOutlet private weak var appearanceSubview: UIView!
+    @IBOutlet private weak var appThemeLabel: UILabel!
+    @IBOutlet private weak var languageLabel: UILabel!
+    @IBOutlet private weak var viewFullPostInfoLabel: UILabel!
     @IBOutlet private weak var themeSegmentControl: UISegmentedControl!
     @IBOutlet private weak var languageSegmentControl: UISegmentedControl!
     @IBOutlet private weak var fullPostInfoSwitch: UISwitch!
-    //Api behaviour segment
+    // API behavior segment
     @IBOutlet private weak var apiBehaviourDataToggleButton: UIButton!
     @IBOutlet private weak var apiBehaviour: UIView!
-    //Exit segment
+    // Exit segment
     @IBOutlet private weak var exitToggleButton: UIButton!
     @IBOutlet private weak var exitSubview: UIView!
+    @IBOutlet private weak var exitHintLabel: UILabel!
     @IBOutlet private weak var exitButton: UIButton!
     
-    //MARK: Status variables
-    //UIView with corresponding value, representing it being shown
-    public var shownSubviews: Dictionary<UIView, Bool> = [:]
+    var delegate: SettingsSelectionDelegate?
+    
+    // MARK: - Status Variables
+    public var shownSubviews: [UIView: Bool] = [:]
     public let interfaceLanguages = Languages.allCases
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
-        updateSwitchesState()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        overrideUserInterfaceStyle = SettingsManager.interfaceTheme == 0 ? .light : .dark
     }
 }
 
-//MARK: - UI Configuration
+// MARK: - UI Configuration
 extension SettingsVC {
     private func configureUI() {
-        self.title = "Settings"
+        overrideUserInterfaceStyle = SettingsManager.interfaceTheme == 0 ? .light : .dark
+        
         setupSubviews()
+        updateTitle()
+        updateLocalization()
+        updateSwitchesState()
     }
     
+    private func updateTitle() {
+        self.title = NSLocalizedString("settings_title", comment: "")
+        let titleColor: UIColor = SettingsManager.interfaceTheme == 0 ? .black : .white
+        navigationController?.navigationBar.titleTextAttributes = [
+            NSAttributedString.Key.foregroundColor: titleColor
+        ]
+    }
+    
+    private func updateLocalization() {
+        // User experience segment
+        let userExperienceTitle = NSLocalizedString("user_experience", comment: "")
+        userExperienceToggleButton.setTitle(userExperienceTitle, for: .normal)
+        userExperienceToggleButton.setTitle(userExperienceTitle, for: .selected)
+        showCensoredPostsLabel.text = NSLocalizedString("show_censored_posts", comment: "")
+        showSpoilersLabel.text = NSLocalizedString("show_spoilers", comment: "")
+        autoplayVideosLabel.text = NSLocalizedString("autoplay_videos", comment: "")
+        
+        // Appearance segment
+        let appAppearanceTitle = NSLocalizedString("app_appearance", comment: "")
+        appearanceToggleButton.setTitle(appAppearanceTitle, for: .normal)
+        appearanceToggleButton.setTitle(appAppearanceTitle, for: .selected)
+        appThemeLabel.text = NSLocalizedString("app_theme", comment: "")
+        languageLabel.text = NSLocalizedString("app_language", comment: "")
+        viewFullPostInfoLabel.text = NSLocalizedString("view_full_post_info", comment: "")
+        
+        // API behavior segment
+        let apiBehaviourTitle = NSLocalizedString("api_behaviour", comment: "")
+        apiBehaviourDataToggleButton.setTitle(apiBehaviourTitle, for: .normal)
+        apiBehaviourDataToggleButton.setTitle(apiBehaviourTitle, for: .selected)
+
+        // Exit segment
+        let exitSegmentTitle = NSLocalizedString("exit", comment: "")
+        exitToggleButton.setTitle(exitSegmentTitle, for: .normal)
+        exitToggleButton.setTitle(exitSegmentTitle, for: .selected)
+        exitHintLabel.text = NSLocalizedString("exit_hint", comment: "")
+        let exitButtonTitle = NSLocalizedString("exit_yes", comment: "")
+        exitButton.setTitle(exitButtonTitle, for: .normal)
+    }
+    
+    private func updateSwitchesState() {
+        censoreSwitch.isOn = SettingsManager.showCensoredPosts
+        spoilerSwitch.isOn = SettingsManager.showSpoilerPosts
+        autoplaySwitch.isOn = SettingsManager.allowVideoAutoplay
+        themeSegmentControl.selectedSegmentIndex = SettingsManager.interfaceTheme
+        languageSegmentControl.selectedSegmentIndex = getLanguageIndex()
+        fullPostInfoSwitch.isOn = SettingsManager.showFullPostInfo
+    }
+    
+    private func getLanguageIndex() -> Int {
+        for (index, language) in interfaceLanguages.enumerated() {
+            if SettingsManager.interfaceLanguage == language.rawValue.lowercased() {
+                return index
+            }
+        }
+        return 0
+    }
+}
+
+// MARK: - Elements Configuration
+extension SettingsVC {
     private func setupSubviews() {
         shownSubviews = [
             userExperienceSubview: false,
@@ -74,7 +141,7 @@ extension SettingsVC {
     private func updateSubviews(except view: UIView) {
         for subview in shownSubviews {
             subview.key.isUserInteractionEnabled = false
-            if subview.value == true && subview.key != view {
+            if subview.value && subview.key != view {
                 subview.key.toggleView()
                 shownSubviews[subview.key]?.toggle()
             }
@@ -82,22 +149,9 @@ extension SettingsVC {
     }
 }
 
-//MARK: - Elements configuration
+// MARK: - User Experience Actions
 extension SettingsVC {
-    private func updateSwitchesState() {
-        censoreSwitch.isOn = SettingsManager.showCensoredPosts
-        spoilerSwitch.isOn = SettingsManager.showSpoilerPosts
-        autoplaySwitch.isOn = SettingsManager.allowVideoAutoplay
-        themeSegmentControl.selectedSegmentIndex = SettingsManager.interfaceTheme
-        languageSegmentControl.selectedSegmentIndex = SettingsManager.interfaceLanguage
-        fullPostInfoSwitch.isOn = SettingsManager.showFullPostInfo
-    }
-}
-
-//MARK: - User Experience actions
-extension SettingsVC {
-    //Subviews
-    @IBAction func UserExperienceToggleButtonTapped(_ sender: Any) {
+    @IBAction func userExperienceToggleButtonTapped(_ sender: Any) {
         updateSubviews(except: userExperienceSubview)
         userExperienceSubview.toggleView()
         shownSubviews[userExperienceSubview]?.toggle()
@@ -116,7 +170,7 @@ extension SettingsVC {
     }
 }
 
-//MARK: - Appearance actions
+// MARK: - Appearance Actions
 extension SettingsVC {
     @IBAction func appearanceButtonTapped(_ sender: Any) {
         updateSubviews(except: appearanceSubview)
@@ -127,10 +181,14 @@ extension SettingsVC {
     @IBAction func themeControlToggled(_ sender: Any) {
         SettingsManager.interfaceTheme = themeSegmentControl.selectedSegmentIndex
         overrideUserInterfaceStyle = themeSegmentControl.selectedSegmentIndex == 0 ? .light : .dark
+        
+        // Сообщаем делегату об изменении темы
+        delegate?.didToggleTheme()
     }
     
     @IBAction func languageControlToggled(_ sender: Any) {
-        SettingsManager.interfaceLanguage = languageSegmentControl.selectedSegmentIndex
+        SettingsManager.interfaceLanguage = interfaceLanguages[languageSegmentControl.selectedSegmentIndex].rawValue.lowercased()
+        delegate?.didToggleLanguage()
     }
     
     @IBAction func fullPostInfoSliderToggled(_ sender: Any) {
@@ -138,7 +196,7 @@ extension SettingsVC {
     }
 }
 
-//MARK: - ApiBehaviour actions
+// MARK: - API Behaviour Actions
 extension SettingsVC {
     @IBAction func apiBehaviourButtonTapped(_ sender: Any) {
         updateSubviews(except: apiBehaviour)
@@ -147,7 +205,7 @@ extension SettingsVC {
     }
 }
 
-//MARK: - Exit actions
+// MARK: - Exit Actions
 extension SettingsVC {
     @IBAction func exitToggleButtonTapped(_ sender: Any) {
         updateSubviews(except: exitSubview)
@@ -160,13 +218,18 @@ extension SettingsVC {
     }
 }
 
-//UIView custom toggle realization
+// UIView custom toggle realization
 private extension UIView {
     func toggleView() {
         UIView.animate(withDuration: 0.25, animations: {
             self.isHidden.toggle()
-            self.alpha = self.alpha == CGFloat(1) ? 0 : 1
+            self.alpha = self.alpha == 1 ? 0 : 1
         })
-        isUserInteractionEnabled = alpha == 1 ? true : false
+        isUserInteractionEnabled = alpha == 1
     }
+}
+
+public protocol SettingsSelectionDelegate: AnyObject {
+    func didToggleTheme()
+    func didToggleLanguage()
 }

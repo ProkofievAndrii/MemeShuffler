@@ -122,7 +122,7 @@
                                                     </attributedString>
                                                 </buttonConfiguration>
                                                 <connections>
-                                                    <action selector="UserExperienceToggleButtonTapped:" destination="7pg-X8-eCh" eventType="touchUpInside" id="kUM-ku-dDQ"/>
+                                                    <action selector="userExperienceToggleButtonTapped:" destination="7pg-X8-eCh" eventType="touchUpInside" id="kUM-ku-dDQ"/>
                                                 </connections>
                                             </button>
                                             <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3va-sw-WaB">
@@ -266,8 +266,8 @@
                                                                             <constraint firstAttribute="width" constant="150" id="aVy-0g-YRr"/>
                                                                         </constraints>
                                                                         <segments>
-                                                                            <segment title="Eng"/>
-                                                                            <segment title="Ukr"/>
+                                                                            <segment title="En"/>
+                                                                            <segment title="Uk"/>
                                                                         </segments>
                                                                         <connections>
                                                                             <action selector="languageControlToggled:" destination="7pg-X8-eCh" eventType="valueChanged" id="gd9-0I-eNm"/>
@@ -399,20 +399,27 @@
                     <connections>
                         <outlet property="apiBehaviour" destination="w0A-tv-6r0" id="VA6-yX-Cxv"/>
                         <outlet property="apiBehaviourDataToggleButton" destination="95b-2F-8F5" id="pFb-6C-ACQ"/>
+                        <outlet property="appThemeLabel" destination="ySe-0k-guJ" id="BgA-zh-rUR"/>
                         <outlet property="appearanceSubview" destination="ume-R0-dmo" id="9GI-ze-9do"/>
                         <outlet property="appearanceToggleButton" destination="xfh-R6-gyc" id="LjB-8o-ogr"/>
                         <outlet property="autoplaySwitch" destination="eqE-ep-WLf" id="apu-N4-io8"/>
+                        <outlet property="autoplayVideosLabel" destination="hSf-Bw-iWM" id="ih1-sQ-o0G"/>
                         <outlet property="censoreSwitch" destination="daI-Av-H1n" id="aVz-N4-bmO"/>
                         <outlet property="exitButton" destination="dj7-Fl-7vk" id="59D-8O-trq"/>
+                        <outlet property="exitHintLabel" destination="YMA-Fe-geJ" id="oWp-6r-Ds5"/>
                         <outlet property="exitSubview" destination="qYT-ts-u4H" id="fyE-IX-oJ5"/>
                         <outlet property="exitToggleButton" destination="hR3-YR-y0l" id="pC2-PC-ErE"/>
                         <outlet property="fullPostInfoSwitch" destination="AaD-r2-SVJ" id="phF-Yd-cqf"/>
+                        <outlet property="languageLabel" destination="YGh-mG-vAc" id="Fbe-5d-Uk6"/>
                         <outlet property="languageSegmentControl" destination="vdT-Wd-vft" id="q2b-bM-p6w"/>
                         <outlet property="settingsStackView" destination="YHW-JU-vNR" id="cLl-Ng-Hdk"/>
+                        <outlet property="showCensoredPostsLabel" destination="SPk-w4-jNG" id="qxg-zQ-dFU"/>
+                        <outlet property="showSpoilersLabel" destination="ZZX-Q2-Gsj" id="lxN-9z-5M9"/>
                         <outlet property="spoilerSwitch" destination="2hL-fS-kRr" id="cKC-hz-lqe"/>
                         <outlet property="themeSegmentControl" destination="Ame-D9-nGO" id="i1K-Gd-fja"/>
                         <outlet property="userExperienceSubview" destination="3va-sw-WaB" id="BlK-dT-LZd"/>
                         <outlet property="userExperienceToggleButton" destination="kUH-e9-lg2" id="TKA-CP-RZg"/>
+                        <outlet property="viewFullPostInfoLabel" destination="71f-RM-mni" id="IFf-YQ-3cP"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="v9i-Np-oPe" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

@@ -122,8 +122,8 @@ public enum Themes: String, CaseIterable, EnumConvertible {
 }
 
 public enum Languages: String, CaseIterable, EnumConvertible {
-    case english = "English"
-    case ukrainian = "Ukrainian"
+    case english = "En"
+    case ukrainian = "Uk"
 }
 
 //MARK: - Enum case/value convertion protocol
