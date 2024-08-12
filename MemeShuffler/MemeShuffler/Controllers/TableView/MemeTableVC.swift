@@ -245,7 +245,7 @@ extension MemeTableVC: UITableViewDataSource {
                     return cell
                 }
                 adjustCellUsingVideo(cell: cell, indexPath: indexPath, url: url, using: redditVideo)
-                cell.setupWithVideo(url: url)
+                cell.setupWithVideo(url: redditVideo.fallbackUrl)
             default:
                 cell.setupDefault()
             }

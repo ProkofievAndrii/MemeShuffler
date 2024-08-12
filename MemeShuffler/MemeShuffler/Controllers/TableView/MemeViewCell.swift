@@ -89,7 +89,11 @@ extension MemeViewCell {
         playerLayer?.videoGravity = .resizeAspect
         contentView.layer.addSublayer(playerLayer!)
         playerLayer?.frame = contentView.bounds
-        player?.play()
+        if SettingsManager.allowVideoAutoplay {
+            player?.play()
+        } else {
+            
+        }
     }
     
     func setupDefault() {
