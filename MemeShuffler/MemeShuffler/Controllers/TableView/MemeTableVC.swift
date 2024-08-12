@@ -153,8 +153,15 @@ extension MemeTableVC: SourceSelectionDelegate {
     }
 }
 
-// MARK: - Settings Selection Delegate
-extension MemeTableVC: SettingsSelectionDelegate {
+// MARK: - Settings Delegate
+extension MemeTableVC: SettingsDelegate {
+    func applyUpdatedSettings() {
+        self.tableView.reloadData()
+    }
+}
+
+// MARK: - Appearance Settings Delegate
+extension MemeTableVC: AppearanceSettingsDelegate {
     func didToggleTheme() {
         applyCurrentTheme()
     }
@@ -167,7 +174,7 @@ extension MemeTableVC {
     @IBAction func selectorModeButtonTapped(_ sender: UIButton) {
         let selectorVC = SourceSelectorVC()
         selectorVC.delegate = self
-        selectorVC.settingsDelegate = self
+        selectorVC.appearanceDelegate = self
 
         let navController = UINavigationController(rootViewController: selectorVC)
         navController.modalPresentationStyle = .popover
@@ -190,7 +197,7 @@ extension MemeTableVC {
         switch segue.identifier {
         case Const.settingsSegueID:
             if let settingsVC = segue.destination as? SettingsVC {
-                settingsVC.delegate = self
+                settingsVC.appearanceDelegate = self
             }
         default: break
         }
@@ -214,29 +221,6 @@ extension MemeTableVC: UITableViewDelegate {
         if offsetY > contentHeight - height - (1 * Const.defaultCellHeight) {
             guard !isLoading else { return }
             loadMemes()
-        }
-    }
-
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let memeCell = cell as? MemeViewCell
-        let meme = memes[indexPath.row]
-        if let urlString = meme.urlString, let url = URL(string: urlString) {
-            switch meme.postHint {
-            case "image":
-                adjustCellUsingImage(cell: memeCell, indexPath: indexPath, url: url)
-                memeCell?.setupWithImage(url: url)
-            case "hosted:video":
-                guard let redditVideo = meme.secureMedia?.redditVideo else {
-                    memeCell?.setupDefault()
-                    return
-                }
-                adjustCellUsingVideo(cell: memeCell, indexPath: indexPath, url: url, using: redditVideo)
-                memeCell?.setupWithVideo(url: url)
-            default:
-                memeCell?.setupDefault()
-            }
-        } else {
-            memeCell?.setupDefault()
         }
     }
 }
@@ -298,8 +282,13 @@ extension MemeTableVC {
 
     private func adjustCellHeight(cell: MemeViewCell?, indexPath: IndexPath, using resolution: (width: CGFloat, height: CGFloat)) {
         let aspectRatio = resolution.height / resolution.width
-        let adjustedCellHeight = cell?.frame.width ?? 0 * aspectRatio
+        let adjustedCellHeight = tableView.frame.width * aspectRatio
         self.cellHeights[indexPath] = adjustedCellHeight
+
+        DispatchQueue.main.async {
+            self.tableView.beginUpdates()
+            self.tableView.endUpdates()
+        }
     }
 }
 

@@ -33,7 +33,7 @@ class SourceSelectorVC: UIViewController {
     }
     
     var delegate: SourceSelectionDelegate?
-    weak var settingsDelegate: SettingsSelectionDelegate?
+    weak var appearanceDelegate: AppearanceSettingsDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,7 +64,7 @@ extension SourceSelectorVC {
         UIParameters.subredditScrollViewHeight = CGFloat(min(subreddits.count, UIParameters.maxVisibleScrollItems)) * (UIParameters.scrollItemHeight + UIParameters.scrollItemSpacing)
         // Options
         UIParameters.optionScrollViewHeight = CGFloat(min(options.count, UIParameters.maxVisibleScrollItems)) * (UIParameters.scrollItemHeight + UIParameters.scrollItemSpacing)
-    }
+    } 
     
     private func calculateSelectorHeight() {
         UIParameters.selectorHeight = UIParameters.subredditScrollViewHeight + UIParameters.optionScrollViewHeight + 150
@@ -254,7 +254,7 @@ extension SourceSelectorVC {
 }
 
 // MARK: - SettingsSelectionDelegate
-extension SourceSelectorVC: SettingsSelectionDelegate {
+extension SourceSelectorVC: AppearanceSettingsDelegate {
     func didToggleTheme() {
         applyCurrentTheme()
     }

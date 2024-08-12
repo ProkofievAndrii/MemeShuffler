@@ -17,7 +17,6 @@ class MemeViewCell: UITableViewCell {
     private var memeImageView: UIImageView!
     private var player: AVPlayer?
     private var playerLayer: AVPlayerLayer?
-    private var overlayView: UIView!
     
     // MARK: Overwritten methods
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -34,7 +33,6 @@ class MemeViewCell: UITableViewCell {
         super.layoutSubviews()
         contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 5, left: 15, bottom: 5, right: 15))
         playerLayer?.frame = contentView.bounds
-        overlayView.frame = contentView.bounds
     }
     
     override func prepareForReuse() {
@@ -46,7 +44,6 @@ class MemeViewCell: UITableViewCell {
         playerLayer = nil
         player = nil
         memeImageView.isHidden = false
-        overlayView.isHidden = true
     }
 }
 
@@ -67,29 +64,14 @@ extension MemeViewCell {
             return imageView
         }()
         
-        overlayView = {
-            let view = UIView()
-            view.backgroundColor = UIColor(white: 0, alpha: 1)
-            view.translatesAutoresizingMaskIntoConstraints = false
-            view.contentMode = .scaleAspectFit
-            view.clipsToBounds = true
-            view.isHidden = true
-            return view
-        }()
         
         contentView.addSubview(memeImageView)
-        contentView.addSubview(overlayView)
         
         NSLayoutConstraint.activate([
             memeImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             memeImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             memeImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             memeImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            
-            overlayView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            overlayView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            overlayView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            overlayView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
     }
     
@@ -107,12 +89,7 @@ extension MemeViewCell {
         playerLayer?.videoGravity = .resizeAspect
         contentView.layer.addSublayer(playerLayer!)
         playerLayer?.frame = contentView.bounds
-        if SettingsManager.allowVideoAutoplay {
-            player?.play()
-            overlayView.isHidden = true
-        } else {
-            overlayView.isHidden = false
-        }
+        player?.play()
     }
     
     func setupDefault() {

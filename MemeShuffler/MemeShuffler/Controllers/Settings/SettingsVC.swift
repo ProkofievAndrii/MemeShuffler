@@ -40,15 +40,21 @@ class SettingsVC: UIViewController {
     @IBOutlet private weak var exitHintLabel: UILabel!
     @IBOutlet private weak var exitButton: UIButton!
     
-    var delegate: SettingsSelectionDelegate?
+    var appearanceDelegate: AppearanceSettingsDelegate?
+    var settingsDelegate: SettingsDelegate?
     
     // MARK: - Status Variables
-    public var shownSubviews: [UIView: Bool] = [:]
-    public let interfaceLanguages = Languages.allCases
+    private var shownSubviews: [UIView: Bool] = [:]
+    private let interfaceLanguages = Languages.allCases
+    private var changesWereMade = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        if changesWereMade { settingsDelegate?.applyUpdatedSettings() }
     }
 }
 
@@ -159,14 +165,17 @@ extension SettingsVC {
     
     @IBAction func censoreSwitchToggled(_ sender: Any) {
         SettingsManager.showCensoredPosts = censoreSwitch.isOn
+        if !changesWereMade { changesWereMade.toggle() }
     }
     
     @IBAction func spoilerSwitchToggled(_ sender: Any) {
         SettingsManager.showSpoilerPosts = spoilerSwitch.isOn
+        if !changesWereMade { changesWereMade.toggle() }
     }
     
     @IBAction func autoplaySliderToggled(_ sender: Any) {
         SettingsManager.allowVideoAutoplay = autoplaySwitch.isOn
+        if !changesWereMade { changesWereMade.toggle() }
     }
 }
 
@@ -181,18 +190,17 @@ extension SettingsVC {
     @IBAction func themeControlToggled(_ sender: Any) {
         SettingsManager.interfaceTheme = themeSegmentControl.selectedSegmentIndex
         overrideUserInterfaceStyle = themeSegmentControl.selectedSegmentIndex == 0 ? .light : .dark
-        
-        // Сообщаем делегату об изменении темы
-        delegate?.didToggleTheme()
+        appearanceDelegate?.didToggleTheme()
     }
     
     @IBAction func languageControlToggled(_ sender: Any) {
         SettingsManager.interfaceLanguage = interfaceLanguages[languageSegmentControl.selectedSegmentIndex].rawValue.lowercased()
-        delegate?.didToggleLanguage()
+        appearanceDelegate?.didToggleLanguage()
     }
     
     @IBAction func fullPostInfoSliderToggled(_ sender: Any) {
         SettingsManager.showFullPostInfo = fullPostInfoSwitch.isOn
+        if !changesWereMade { changesWereMade.toggle() }
     }
 }
 
@@ -229,7 +237,11 @@ private extension UIView {
     }
 }
 
-public protocol SettingsSelectionDelegate: AnyObject {
+public protocol SettingsDelegate: AnyObject {
+    func applyUpdatedSettings()
+}
+
+public protocol AppearanceSettingsDelegate: AnyObject {
     func didToggleTheme()
     func didToggleLanguage()
 }
