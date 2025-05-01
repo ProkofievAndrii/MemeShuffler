@@ -303,7 +303,7 @@ extension MemeTableVC: UITableViewDelegate {
                    -> UISwipeActionsConfiguration? {
         let share = UIContextualAction(
             style: .normal,
-            title: NSLocalizedString("Share", comment: "")
+            title: NSLocalizedString("share", comment: "")
         ) { [weak self] _, view, completion in
             guard let self = self else { return }
             let meme = self.memes[indexPath.row]

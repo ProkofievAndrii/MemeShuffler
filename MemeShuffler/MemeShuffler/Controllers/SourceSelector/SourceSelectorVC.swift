@@ -17,9 +17,11 @@ class SourceSelectorVC: UIViewController {
     private var optionsLabel: UILabel!
     
     // Variables
-    private let subreddits = Subreddits.allCases
-    private let options = Options.allCases
-    private let filters = Filters.allCases
+    private var subreddits: [String] {
+        SettingsManager.savedSubreddits
+    }
+    private var filters = Filters.allCases
+    private var options = Options.allCases
    
     struct UIParameters {
         static let selectorInset: CGFloat = 16
@@ -46,10 +48,6 @@ class SourceSelectorVC: UIViewController {
         configureAppearance()
         configureElements()
     }
-    
-    private func applyCurrentTheme() {
-        overrideUserInterfaceStyle = SettingsManager.interfaceTheme == 0 ? .light : .dark
-    }
 }
 
 // MARK: - UI Configuration
@@ -64,7 +62,7 @@ extension SourceSelectorVC {
         UIParameters.subredditScrollViewHeight = CGFloat(min(subreddits.count, UIParameters.maxVisibleScrollItems)) * (UIParameters.scrollItemHeight + UIParameters.scrollItemSpacing)
         // Options
         UIParameters.optionScrollViewHeight = CGFloat(min(options.count, UIParameters.maxVisibleScrollItems)) * (UIParameters.scrollItemHeight + UIParameters.scrollItemSpacing)
-    } 
+    }
     
     private func calculateSelectorHeight() {
         UIParameters.selectorHeight = UIParameters.subredditScrollViewHeight + UIParameters.optionScrollViewHeight + 150
@@ -75,8 +73,14 @@ extension SourceSelectorVC {
         modalPresentationStyle = .popover
         preferredContentSize = CGSize(width: UIParameters.selectorWidth, height: UIParameters.selectorHeight)
     }
-   
-    // MARK: - Elements setup
+    
+    private func applyCurrentTheme() {
+        overrideUserInterfaceStyle = SettingsManager.interfaceTheme == 0 ? .light : .dark
+    }
+}
+
+// MARK: - Elements setup
+extension SourceSelectorVC {
     private func configureElements() {
         let mainStackView: UIStackView = {
             let stackView = UIStackView()
@@ -87,6 +91,7 @@ extension SourceSelectorVC {
             return stackView
         }()
         
+        //MARK: Filters
         filtersLabel = {
             let label = UILabel()
             label.text = NSLocalizedString("filter_by", comment: "")
@@ -114,7 +119,7 @@ extension SourceSelectorVC {
             return separator
         }()
        
-        // Subreddits
+        //MARK: Subreddits
         subredditLabel = {
             let label = UILabel()
             label.text = NSLocalizedString("saved_subreddits", comment: "")
@@ -143,7 +148,7 @@ extension SourceSelectorVC {
        
         for subreddit in subreddits {
             let button = UIButton(type: .system)
-            button.setTitle(subreddit.rawValue, for: .normal)
+            button.setTitle(subreddit, for: .normal)
             button.contentHorizontalAlignment = .left
             button.addTarget(self, action: #selector(subredditButtonTapped(_:)), for: .touchUpInside)
             subredditStackView.addArrangedSubview(button)
@@ -151,7 +156,7 @@ extension SourceSelectorVC {
         
         subredditScrollView.addSubview(subredditStackView)
         
-        // Options
+        //MARK: Options
         optionsLabel = {
             let label = UILabel()
             label.text = NSLocalizedString("other_options", comment: "")
