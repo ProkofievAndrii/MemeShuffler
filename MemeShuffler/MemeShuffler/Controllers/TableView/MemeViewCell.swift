@@ -7,34 +7,31 @@
 
 import UIKit
 import AVKit
-import Kingfisher
 import CommonUtils
+import Kingfisher
 
-// MARK: - Lifecycle
 class MemeViewCell: UITableViewCell {
-    
-    // Outlets
     private var memeImageView: UIImageView!
     private var player: AVPlayer?
     private var playerLayer: AVPlayerLayer?
-    
-    // MARK: Overwritten methods
+
+    // MARK: - Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupCell()
     }
-    
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupCell()
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
         contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 5, left: 15, bottom: 5, right: 15))
         playerLayer?.frame = contentView.bounds
     }
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
         memeImageView.kf.cancelDownloadTask()
@@ -55,33 +52,28 @@ extension MemeViewCell {
         contentView.layer.masksToBounds = true
         backgroundColor = .clear
         selectionStyle = .none
-        
-        memeImageView = {
-            let imageView = UIImageView()
-            imageView.translatesAutoresizingMaskIntoConstraints = false
-            imageView.contentMode = .scaleAspectFit
-            imageView.clipsToBounds = true
-            return imageView
-        }()
-        
-        
+
+        memeImageView = UIImageView()
+        memeImageView.translatesAutoresizingMaskIntoConstraints = false
+        memeImageView.contentMode = .scaleAspectFit
+        memeImageView.clipsToBounds = true
         contentView.addSubview(memeImageView)
-        
+
         NSLayoutConstraint.activate([
             memeImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             memeImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             memeImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            memeImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            memeImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
     }
-    
+
     func setupWithImage(url: URL) {
-        let loadingPlaceholder = UIImage(named: "loadingPlaceholder")
+        let placeholder = UIImage(named: "loadingPlaceholder")
         memeImageView.kf.indicatorType = .activity
-        memeImageView.kf.setImage(with: url, placeholder: loadingPlaceholder)
+        memeImageView.kf.setImage(with: url, placeholder: placeholder)
         memeImageView.isHidden = false
     }
-    
+
     func setupWithVideo(url: URL) {
         memeImageView.isHidden = true
         player = AVPlayer(url: url)
@@ -91,14 +83,39 @@ extension MemeViewCell {
         playerLayer?.frame = contentView.bounds
         if SettingsManager.allowVideoAutoplay {
             player?.play()
-        } else {
-            
         }
     }
-    
+
     func setupDefault() {
         memeImageView.image = UIImage(named: "ErrorImagePlaceholder")
         memeImageView.isHidden = false
+    }
+
+    func setupWithImageData(_ data: Data) {
+        memeImageView.isHidden = false
+        if let image = UIImage(data: data) {
+            memeImageView.image = image
+        } else {
+            setupDefault()
+        }
+    }
+
+    func setupWithLocalMedia(_ data: Data, type: String) {
+        switch type.lowercased() {
+        case "image", "gif":
+            setupWithImageData(data)
+        case "video":
+            let filename = UUID().uuidString + ".mp4"
+            let url = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
+            do {
+                try data.write(to: url)
+                setupWithVideo(url: url)
+            } catch {
+                setupDefault()
+            }
+        default:
+            setupDefault()
+        }
     }
 }
 

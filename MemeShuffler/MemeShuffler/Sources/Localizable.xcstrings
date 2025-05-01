@@ -137,6 +137,23 @@
         }
       }
     },
+    "favorite_posts" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorite posts"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Улюблені пости"
+          }
+        }
+      }
+    },
     "filter_by" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -201,6 +218,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Налаштування"
+          }
+        }
+      }
+    },
+    "Share" : {
+      "localizations" : {
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поділитись"
           }
         }
       }

@@ -28,30 +28,60 @@ public struct DataChild: Codable {
 }
 
 public struct Meme: Codable {
-    let subreddit, title: String
-    let authorFullname: String?
-    let downs, ups: Int
-    public let postHint: String?
+    let subreddit:              String
+    public let title:           String
+    let authorFullname:         String?
+    let downs, ups:             Int
+    public let postHint:        String?
     public let over18, spoiler: Bool
-    let id, author: String
-    let numComments: Int
-    let permalink: String
-    public let urlString: String?
-    let createdUTC: Int
-    public let secureMedia: SecureMedia?
+    public let id:              String
+    let author:                 String
+    let numComments:            Int
+    let permalink:              String
+    public let urlString:       String?
+    let createdUTC:             Int
+    public let secureMedia:     SecureMedia?
+    public var width:           Double = 0
+    public var height:          Double = 0
     
     enum CodingKeys: String, CodingKey {
         case subreddit
         case authorFullname = "author_fullname"
         case title, downs, ups
-        case postHint = "post_hint"
-        case over18 = "over_18"
+        case postHint       = "post_hint"
+        case over18         = "over_18"
         case spoiler, id, author
-        case numComments = "num_comments"
+        case numComments    = "num_comments"
         case permalink
-        case urlString = "url"
-        case createdUTC = "created_utc"
-        case secureMedia = "secure_media"
+        case urlString      = "url"
+        case createdUTC     = "created_utc"
+        case secureMedia    = "secure_media"
+    }
+}
+
+public extension Meme {
+    init(
+        id: String,
+        title: String?,
+        urlString: String?,
+        width: Double,
+        height: Double
+    ) {
+        self.subreddit       = ""
+        self.authorFullname  = nil
+        self.title           = title ?? ""
+        self.downs           = 0
+        self.ups             = 0
+        self.postHint        = nil
+        self.over18          = false
+        self.spoiler         = false
+        self.id              = id
+        self.author          = ""
+        self.numComments     = 0
+        self.permalink       = ""
+        self.urlString       = urlString
+        self.createdUTC      = 0
+        self.secureMedia     = nil
     }
 }
 
@@ -76,16 +106,18 @@ public struct RedditVideo: Codable {
 }
 
 //MARK: - Enums
-//Enumeration containing default subreddit cases used by application
+public enum MemeSource: String, Codable {
+    case remote, local, favorite
+}
+
 public enum Subreddits: String, CaseIterable, EnumConvertible {
-    case angryupvote = "angryupvote"
-    case blursedimages = "blursedimages"
+    case blursedimages  = "blursedimages"
     case cursedcomments = "cursedcomments"
     case deadbydaylight = "deadbydaylight"
-    case greentext = "greentext"
-    case memes = "memes"
-    case memevideos = "memevideos"
-    case shitposting = "shitposting"
+    case greentext      = "greentext"
+    case memes          = "memes"
+    case memevideos     = "memevideos"
+    case shitposting    = "shitposting"
     
     public static func getRandomSubreddit() -> Subreddits {
         return Subreddits.allCases.randomElement() ?? .memes
@@ -106,7 +138,7 @@ public enum Subreddits: String, CaseIterable, EnumConvertible {
 }
 
 public enum Options: String, CaseIterable, EnumConvertible {
-    case randomSet = "Random set"
+    case favoritePosts = "Favorite posts"
     case savedLocally = "Saved locally"
 }
 

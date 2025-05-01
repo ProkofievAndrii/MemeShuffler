@@ -212,9 +212,9 @@ extension SourceSelectorVC {
             mainStackView.topAnchor.constraint(equalTo: view.topAnchor, constant: UIParameters.selectorInset * 1.5),
             mainStackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -UIParameters.selectorInset),
             
-            optionsScrollView.heightAnchor.constraint(equalToConstant: UIParameters.optionScrollViewHeight),
+            optionsScrollView.heightAnchor.constraint(lessThanOrEqualToConstant: UIParameters.optionScrollViewHeight),
             optionsScrollView.widthAnchor.constraint(equalToConstant: UIParameters.selectorWidth - (UIParameters.selectorInset * 2)),
-            subredditScrollView.heightAnchor.constraint(equalToConstant: UIParameters.subredditScrollViewHeight),
+            subredditScrollView.heightAnchor.constraint(lessThanOrEqualToConstant: UIParameters.subredditScrollViewHeight),
             subredditScrollView.widthAnchor.constraint(equalToConstant: UIParameters.selectorWidth - (UIParameters.selectorInset * 2)),
             
             subredditStackView.leadingAnchor.constraint(equalTo: subredditScrollView.leadingAnchor),

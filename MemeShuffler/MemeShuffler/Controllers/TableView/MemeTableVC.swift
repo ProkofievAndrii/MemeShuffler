@@ -7,9 +7,10 @@
 
 import UIKit
 import AVKit
-import Kingfisher
+import CoreData
 import MemeApiHandler
 import CommonUtils
+import Kingfisher
 
 class MemeTableVC: UIViewController {
     @IBOutlet private weak var tableView: UITableView!
@@ -24,30 +25,19 @@ class MemeTableVC: UIViewController {
         static let navigationButtonsWidth: CGFloat = 80
     }
 
-    private var memes: [Meme] = [] {
-        didSet {
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
-        }
-    }
+    private let imageDownloader = ImageDownloader.default
 
-    private var cellHeights: [IndexPath: CGFloat] = [:] {
-        didSet {
-            DispatchQueue.main.async {
-                self.tableView.beginUpdates()
-                self.tableView.endUpdates()
-            }
-        }
-    }
+    private var memes: [Meme] = []
+    private var cellHeights: [IndexPath: CGFloat] = [:]
 
     private var isLoading = false
+    private var isShowingFavorites = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        SettingsManager.defaultSubreddit = "memes"
-        SettingsManager.defaultLoadingQuantity = 20
+        SettingsManager.defaultLoadingQuantity = 40
         configureUI()
+        configureGestures()
         loadMemes()
     }
 }
@@ -65,7 +55,7 @@ extension MemeTableVC {
     }
 
     private func configureNavigationbar() {
-        self.title = "r/\(SettingsManager.defaultSubreddit)"
+        title = "r/\(SettingsManager.defaultSubreddit)"
         let titleColor: UIColor = SettingsManager.interfaceTheme == 0 ? .black : .white
         navigationController?.navigationBar.titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: titleColor
@@ -87,9 +77,75 @@ extension MemeTableVC {
     }
 }
 
+// MARK: - Gestures configuration
+extension MemeTableVC {
+    private func configureGestures() {
+        let longPress = UILongPressGestureRecognizer(
+            target: self,
+            action: #selector(handleLongPress(_:))
+        )
+        longPress.minimumPressDuration = 0.5
+        tableView.addGestureRecognizer(longPress)
+    }
+
+    @objc private func handleLongPress(_ gesture: UILongPressGestureRecognizer) {
+        guard gesture.state == .began else { return }
+        let point = gesture.location(in: tableView)
+        guard let indexPath = tableView.indexPathForRow(at: point), indexPath.row < memes.count else { return }
+
+        let meme  = memes[indexPath.row]
+        let fav   = CoreDataManager.shared.isFavorite(id: meme.id)
+
+        if fav {
+            CoreDataManager.shared.unfavorite(id: meme.id)
+            provideFeedback(on: indexPath, added: false)
+        } else {
+            let downloadURL: URL
+            if meme.postHint == "hosted:video",
+               let fallback = meme.secureMedia?.redditVideo?.fallbackUrl {
+                downloadURL = fallback
+            } else if let s = meme.urlString, let u = URL(string: s) {
+                downloadURL = u
+            } else { return }
+
+            let fallbackWidth = Double(tableView.frame.width)
+            URLSession.shared.dataTask(with: downloadURL) { data, _, _ in
+                guard let data = data else { return }
+                let type = (meme.postHint == "hosted:video") ? "video"
+                           : (downloadURL.pathExtension.lowercased() == "gif" ? "gif" : "image")
+                let width  = meme.width  > 0 ? meme.width  : fallbackWidth
+                let height = meme.height > 0 ? meme.height : Double(Const.defaultCellHeight)
+                CoreDataManager.shared.favorite(
+                    meme:      meme,
+                    mediaData: data,
+                    mediaType: type,
+                    width:     width,
+                    height:    height
+                )
+                DispatchQueue.main.async {
+                    self.provideFeedback(on: indexPath, added: true)
+                }
+            }.resume()
+        }
+    }
+
+    private func provideFeedback(on indexPath: IndexPath, added: Bool) {
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        if let cell = tableView.cellForRow(at: indexPath) {
+            let color = added ? UIColor.systemGreen : UIColor.systemRed
+            let original = cell.contentView.backgroundColor
+            cell.contentView.backgroundColor = color.withAlphaComponent(0.3)
+            UIView.animate(withDuration: 0.6) {
+                cell.contentView.backgroundColor = original
+            }
+        }
+    }
+}
+
 // MARK: - API Manager Request
 extension MemeTableVC {
     private func loadMemes() {
+        isShowingFavorites = false
         configureApiParameters()
         executeRequest()
     }
@@ -101,26 +157,25 @@ extension MemeTableVC {
 
     private func executeRequest() {
         isLoading = true
-        MemeApiManager.loadMemesCompilation { [weak self] memes in
+        MemeApiManager.loadMemesCompilation { [weak self] newMemes in
             guard let self = self else { return }
             DispatchQueue.main.async {
-                if let memes = memes {
-                    self.memes.append(contentsOf: memes)
+                if let arr = newMemes {
+                    self.memes.append(contentsOf: arr)
+                    self.tableView.reloadData()
                 }
                 self.isLoading = false
             }
         }
     }
 
-    private func resetApiState() {
+    private func updatedMemeRequest() {
+        imageDownloader.cancelAll()
         MemeApiManager.setInitial(true)
         MemeApiManager.setAfter(nil)
         memes.removeAll()
         cellHeights.removeAll()
-    }
-
-    private func updatedMemeRequest() {
-        resetApiState()
+        tableView.reloadData()
         loadMemes()
     }
 }
@@ -128,35 +183,61 @@ extension MemeTableVC {
 // MARK: - Source Selection Delegate
 extension MemeTableVC: SourceSelectionDelegate {
     func didSelectSubreddit(_ subreddit: String) {
+        imageDownloader.cancelAll()
+        isShowingFavorites = false
         MemeApiManager.setSubredditName(subreddit)
-        self.title = "r/\(subreddit)"
+        title = "r/\(subreddit)"
         updatedMemeRequest()
     }
 
     func didSelectOption(_ option: String) {
-        self.title = "\(option)"
-        print(option)
+        imageDownloader.cancelAll()
+        switch option {
+        case Options.favoritePosts.rawValue:
+            isShowingFavorites = true
+            title = option
+            let posts = CoreDataManager.shared.fetchFavoritePosts()
+            memes = posts.map { post in
+                Meme(
+                    id:        post.id ?? "",
+                    title:     post.title,
+                    urlString: post.urlString,
+                    width:     post.width,
+                    height:    post.height
+                )
+            }
+            cellHeights.removeAll()
+            tableView.reloadData()
+
+        case Options.savedLocally.rawValue:
+            isShowingFavorites = false
+            title = option
+            memes.removeAll()
+            tableView.reloadData()
+
+        default:
+            updatedMemeRequest()
+        }
     }
 
     func didSelectFilter(_ filter: String) {
+        imageDownloader.cancelAll()
+        isShowingFavorites = false
         MemeApiManager.setFilter(filter)
         updatedMemeRequest()
     }
 }
 
-// MARK: - Settings Delegate
+// MARK: - Settings & Appearance Delegates
 extension MemeTableVC: SettingsDelegate {
     func applyUpdatedSettings() {
-        self.tableView.reloadData()
+        tableView.reloadData()
     }
 }
 
-// MARK: - Appearance Settings Delegate
 extension MemeTableVC: AppearanceSettingsDelegate {
-    func didToggleTheme() {
-        applyCurrentTheme()
-    }
-    func didToggleLanguage() {}
+    func didToggleTheme() { applyCurrentTheme() }
+    func didToggleLanguage() { }
 }
 
 // MARK: - Navigation
@@ -165,53 +246,54 @@ extension MemeTableVC {
         let selectorVC = SourceSelectorVC()
         selectorVC.delegate = self
         selectorVC.appearanceDelegate = self
-        let navController = UINavigationController(rootViewController: selectorVC)
-        navController.modalPresentationStyle = .popover
-        if let popoverController = navController.popoverPresentationController {
-            popoverController.delegate = self
-            popoverController.sourceView = sender
-            popoverController.sourceRect = CGRect(
+        let nav = UINavigationController(rootViewController: selectorVC)
+        nav.modalPresentationStyle = .popover
+        if let pop = nav.popoverPresentationController {
+            pop.delegate = self
+            pop.sourceView = sender
+            pop.sourceRect = CGRect(
                 x: sender.bounds.midX,
                 y: sender.bounds.maxY,
                 width: 0,
                 height: 0
             )
-            popoverController.permittedArrowDirections = .up
+            pop.permittedArrowDirections = .up
         }
-        present(navController, animated: true, completion: nil)
+        present(nav, animated: true)
     }
 
     @IBAction func settingsButtonTapped(_ sender: UIButton) {
-        self.performSegue(withIdentifier: Const.settingsSegueID, sender: nil)
+        performSegue(withIdentifier: Const.settingsSegueID, sender: nil)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        switch segue.identifier {
-        case Const.settingsSegueID:
-            if let settingsVC = segue.destination as? SettingsVC {
-                settingsVC.appearanceDelegate = self
-            }
-        default: break
+        if segue.identifier == Const.settingsSegueID,
+           let settingsVC = segue.destination as? SettingsVC {
+            settingsVC.appearanceDelegate = self
         }
     }
 }
 
-// MARK: - Table Delegate
+// MARK: - Table Delegate & DataSource
 extension MemeTableVC: UITableViewDelegate {
-    func tableView(_ tableView: UITableView,
-                   heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if let height = cellHeights[indexPath] {
-            return height
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if isShowingFavorites {
+            let meme  = memes[indexPath.row]
+            if let post = CoreDataManager.shared.fetchPost(withId: meme.id) {
+                let aspectRatio = CGFloat(post.height / post.width)
+                return tableView.frame.width * aspectRatio
+            }
+            return Const.defaultCellHeight
         }
-        return Const.defaultCellHeight
+        return cellHeights[indexPath] ?? Const.defaultCellHeight
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard !isLoading, !isShowingFavorites else { return }
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
-        let height = scrollView.frame.size.height
-        if offsetY > contentHeight - height - (1 * Const.defaultCellHeight) {
-            guard !isLoading else { return }
+        let viewHeight = scrollView.frame.size.height
+        if offsetY > contentHeight - viewHeight - Const.defaultCellHeight {
             loadMemes()
         }
     }
@@ -219,57 +301,77 @@ extension MemeTableVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView,
                    trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath)
                    -> UISwipeActionsConfiguration? {
-        let shareAction = UIContextualAction(style: .normal, title: NSLocalizedString("Share", comment: "")) { [weak self] action, view, completion in
+        let share = UIContextualAction(
+            style: .normal,
+            title: NSLocalizedString("Share", comment: "")
+        ) { [weak self] _, view, completion in
             guard let self = self else { return }
             let meme = self.memes[indexPath.row]
-            if let urlString = meme.urlString, let url = URL(string: urlString) {
-                let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-                activityVC.popoverPresentationController?.sourceView = view
-                self.present(activityVC, animated: true, completion: nil)
+            if let urlString = meme.urlString,
+               let url = URL(string: urlString) {
+                let vc = UIActivityViewController(
+                    activityItems: [url],
+                    applicationActivities: nil
+                )
+                vc.popoverPresentationController?.sourceView = view
+                self.present(vc, animated: true)
                 completion(true)
             } else {
                 completion(false)
             }
         }
-        return UISwipeActionsConfiguration(actions: [shareAction])
+        return UISwipeActionsConfiguration(actions: [share])
     }
 }
 
-// MARK: - Table Data Source
 extension MemeTableVC: UITableViewDataSource {
-    func tableView(_ tableView: UITableView,
-                   numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return memes.count
     }
 
-    func tableView(_ tableView: UITableView,
-                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(
             withIdentifier: Const.cellReuseId,
             for: indexPath
         ) as! MemeViewCell
         let meme = memes[indexPath.row]
-        if let urlString = meme.urlString, let url = URL(string: urlString) {
+
+        //MARK: CELL OFFLINE MODE
+        if isShowingFavorites {
+            if let post = CoreDataManager.shared.fetchPost(withId: meme.id),
+               let data = post.mediaData,
+               let type = post.mediaType {
+                cell.setupWithLocalMedia(data, type: type)
+            } else {
+                cell.setupDefault()
+            }
+            return cell
+        }
+        
+        //MARK: CELL ONLINE MODE
+        if let urlString = meme.urlString,
+           let url = URL(string: urlString)
+        {
             switch meme.postHint {
             case "image":
-                adjustCellUsingImage(
-                    cell: cell,
-                    indexPath: indexPath,
-                    url: url
-                )
+                KingfisherManager.shared.retrieveImage(with: url) { [weak self] result in
+                    guard let self = self, case .success(let value) = result else { return }
+                    let resolution = (value.image.size.width, value.image.size.height)
+                    self.adjustCellHeight(
+                        cell:      cell,
+                        indexPath: indexPath,
+                        using:     resolution
+                    )
+                }
                 cell.setupWithImage(url: url)
             case "hosted:video":
-                guard let redditVideo = meme.secureMedia?.redditVideo else {
+                if let media = meme.secureMedia?.redditVideo {
+                    let resolution = (CGFloat(media.width), CGFloat(media.height))
+                    adjustCellHeight(cell: cell, indexPath: indexPath, using: resolution)
+                    cell.setupWithVideo(url: media.fallbackUrl)
+                } else {
                     cell.setupDefault()
-                    return cell
                 }
-                adjustCellUsingVideo(
-                    cell: cell,
-                    indexPath: indexPath,
-                    url: url,
-                    using: redditVideo
-                )
-                cell.setupWithVideo(url: redditVideo.fallbackUrl)
             default:
                 cell.setupDefault()
             }
@@ -325,12 +427,15 @@ extension MemeTableVC {
         indexPath: IndexPath,
         using resolution: (width: CGFloat, height: CGFloat)
     ) {
-        let aspectRatio = resolution.height / resolution.width
-        let adjustedCellHeight = tableView.frame.width * aspectRatio
-        self.cellHeights[indexPath] = adjustedCellHeight
+        let aspectRatio    = resolution.height / resolution.width
+        let adjustedHeight = tableView.frame.width * aspectRatio
+        memes[indexPath.row].width  = Double(resolution.width)
+        memes[indexPath.row].height = Double(resolution.height)
+
+        cellHeights[indexPath] = adjustedHeight
         DispatchQueue.main.async {
-            self.tableView.beginUpdates()
-            self.tableView.endUpdates()
+          self.tableView.beginUpdates()
+          self.tableView.endUpdates()
         }
     }
 }
