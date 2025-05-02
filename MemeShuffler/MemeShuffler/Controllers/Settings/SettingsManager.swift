@@ -21,6 +21,8 @@ public class SettingsManager {
         // API parameters
         static let defaultSubreddit        = "defaultSubreddit"
         static let defaultLoadingQuantity  = "defaultLoadingQuantity"
+        // Database parameters
+        static let localSaveLimit          = "localSaveLimit"
         // Custom subreddits
         static let savedSubreddits         = "savedSubreddits"
     }
@@ -74,6 +76,11 @@ public class SettingsManager {
     public static var defaultLoadingQuantity: Int {
         get { UserDefaults.standard.integer(forKey: Keys.defaultLoadingQuantity) }
         set { UserDefaults.standard.set(newValue, forKey: Keys.defaultLoadingQuantity) }
+    }
+    
+    public static var localSaveLimit: Int {
+        get { UserDefaults.standard.integer(forKey: Keys.localSaveLimit) }
+        set { UserDefaults.standard.set(newValue, forKey: Keys.localSaveLimit) }
     }
     
     // MARK: - Custom Subreddits

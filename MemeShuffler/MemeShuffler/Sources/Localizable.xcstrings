@@ -134,6 +134,38 @@
         }
       }
     },
+    "clear_all_saved_data" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear all saved data"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Видалити всі пости"
+          }
+        }
+      }
+    },
+    "erase" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erase"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Стерти"
+          }
+        }
+      }
+    },
     "error" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -232,6 +264,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Фільтрувати за:"
+          }
+        }
+      }
+    },
+    "limit_number_of_posts_saved_locally" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limit os posts saved"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ліміт збереження постів"
+          }
+        }
+      }
+    },
+    "limit_saved_posts" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limit saved posts"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ліміт завантаження"
+          }
+        }
+      }
+    },
+    "manual_local_download" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manual local download"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Завантажити вручну"
           }
         }
       }
@@ -366,6 +446,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Показувати спойлери"
+          }
+        }
+      }
+    },
+    "start" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Старт"
           }
         }
       }

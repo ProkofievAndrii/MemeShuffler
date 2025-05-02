@@ -75,13 +75,13 @@ final class CoreDataManager {
     }
 
     func deleteAllPosts() {
-        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Post.fetchRequest()
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Post")
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         do {
             try viewContext.execute(deleteRequest)
             viewContext.reset()
         } catch {
-            print("Failed to delete all posts: \(error)")
+            print("Failed to delete all posts:", error)
         }
     }
 
@@ -136,18 +136,6 @@ final class CoreDataManager {
         post.mediaData  = mediaData
         post.mediaType  = mediaType
         saveContext()
-        
-        print("""
-                ✅ Saved Favorite Post:
-                  id:          \(post.id ?? "")
-                  title:       \(post.title ?? "")
-                  urlString:   \(post.urlString ?? "")
-                  width:       \(post.width)
-                  height:      \(post.height)
-                  mediaType:   \(post.mediaType ?? "")
-                  mediaData:   \(post.mediaData?.count ?? 0) bytes
-                  isFavorite:  \(post.isFavorite)
-                """)
     }
 
     func unfavorite(id: String) {

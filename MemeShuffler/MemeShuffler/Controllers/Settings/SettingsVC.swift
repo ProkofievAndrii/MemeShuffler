@@ -31,69 +31,84 @@ class SettingsVC: UIViewController {
     @IBOutlet private weak var themeSegmentControl: UISegmentedControl!
     @IBOutlet private weak var languageSegmentControl: UISegmentedControl!
     @IBOutlet private weak var fullPostInfoSwitch: UISwitch!
-    // API behavior segment
-    @IBOutlet private weak var apiBehaviourDataToggleButton: UIButton!
-    @IBOutlet private weak var apiBehaviour: UIView!
-    
+    // API segment
+    @IBOutlet private weak var apiDataToggleButton: UIButton!
+    @IBOutlet private weak var apiSubview: UIView!
     @IBOutlet private weak var subredditsScrollView: UIScrollView!
     @IBOutlet private weak var addSubredditButton: UIButton!
     @IBOutlet private weak var clearSubredditsButton: UIButton!
+    //Database segment
+    @IBOutlet private weak var databaseToggleButton: UIButton!
+    @IBOutlet private weak var databaseSubview: UIView!
+    @IBOutlet private weak var limitLabel: UILabel!
+    @IBOutlet private weak var limitPopupButton: UIButton!
     
+    @IBOutlet private weak var downloadLabel: UILabel!
+    @IBOutlet private weak var downloadButton: UIButton!
+    @IBOutlet private weak var eraseLabel: UILabel!
+    @IBOutlet private weak var eraseButton: UIButton!
     // Exit segment
     @IBOutlet private weak var exitToggleButton: UIButton!
     @IBOutlet private weak var exitSubview: UIView!
     @IBOutlet private weak var exitHintLabel: UILabel!
     @IBOutlet private weak var exitButton: UIButton!
     
-    // MARK: Delegates
+    // MARK: - Delegates
     var appearanceDelegate: AppearanceSettingsDelegate?
     var settingsDelegate: SettingsDelegate?
+    weak var sourceDelegate: SourceSelectionDelegate?
     
-    // MARK: Status Variables
+    // MARK: - State
     private var shownSubviews: [UIView: Bool] = [:]
     private let interfaceLanguages = Languages.allCases
     private var changesWereMade = false
+    
     private var savedSubreddits: [String] {
         get { UserDefaults.standard.stringArray(forKey: "savedSubreddits") ?? [] }
         set { UserDefaults.standard.set(newValue, forKey: "savedSubreddits") }
     }
+    private let limitOptions = [0, 50, 100, 500]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
     }
-    
+        
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if changesWereMade { settingsDelegate?.applyUpdatedSettings() }
+        if changesWereMade {
+            settingsDelegate?.applyUpdatedSettings()
+        }
     }
 }
 
 // MARK: - UI Configuration
 extension SettingsVC {
     private func configureUI() {
+        // theme
         overrideUserInterfaceStyle = SettingsManager.interfaceTheme == 0 ? .light : .dark
         
+        // subviews
         setupSubviews()
         updateTitle()
         updateLocalization()
         updateSwitchesState()
+        
+        // dynamic parts
         configureApiBehaviourUI()
+        configureDatabaseUI()
     }
     
     private func updateTitle() {
         title = NSLocalizedString("settings_title", comment: "")
-        let titleColor: UIColor = SettingsManager.interfaceTheme == 0 ? .black : .white
-        navigationController?.navigationBar.titleTextAttributes = [
-            .foregroundColor: titleColor
-        ]
+        let color: UIColor = SettingsManager.interfaceTheme == 0 ? .black : .white
+        navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: color]
     }
     
     private func updateLocalization() {
         // User experience
         let uxTitle = NSLocalizedString("user_experience", comment: "")
         userExperienceToggleButton.setTitle(uxTitle, for: .normal)
-        userExperienceToggleButton.setTitle(uxTitle, for: .selected)
         showCensoredPostsLabel.text = NSLocalizedString("show_censored_posts", comment: "")
         showSpoilersLabel.text      = NSLocalizedString("show_spoilers", comment: "")
         autoplayVideosLabel.text    = NSLocalizedString("autoplay_videos", comment: "")
@@ -101,20 +116,24 @@ extension SettingsVC {
         // Appearance
         let appearanceTitle = NSLocalizedString("app_appearance", comment: "")
         appearanceToggleButton.setTitle(appearanceTitle, for: .normal)
-        appearanceToggleButton.setTitle(appearanceTitle, for: .selected)
-        appThemeLabel.text          = NSLocalizedString("app_theme", comment: "")
-        languageLabel.text          = NSLocalizedString("app_language", comment: "")
-        viewFullPostInfoLabel.text  = NSLocalizedString("view_full_post_info", comment: "")
+        appThemeLabel.text         = NSLocalizedString("app_theme", comment: "")
+        languageLabel.text         = NSLocalizedString("app_language", comment: "")
+        viewFullPostInfoLabel.text = NSLocalizedString("view_full_post_info", comment: "")
         
-        // API behaviour
+        // API
         let apiTitle = NSLocalizedString("api_behaviour", comment: "")
-        apiBehaviourDataToggleButton.setTitle(apiTitle, for: .normal)
-        apiBehaviourDataToggleButton.setTitle(apiTitle, for: .selected)
+        apiDataToggleButton.setTitle(apiTitle, for: .normal)
+        
+        // Database
+        limitLabel.text      = NSLocalizedString("limit_saved_posts", comment: "")
+        downloadLabel.text   = NSLocalizedString("manual_local_download", comment: "")
+        eraseLabel.text      = NSLocalizedString("clear_all_saved_data", comment: "")
+        downloadButton.setTitle(NSLocalizedString("start", comment: ""), for: .normal)
+        eraseButton.setTitle(NSLocalizedString("erase", comment: ""), for: .normal)
         
         // Exit
         let exitTitle = NSLocalizedString("exit", comment: "")
         exitToggleButton.setTitle(exitTitle, for: .normal)
-        exitToggleButton.setTitle(exitTitle, for: .selected)
         exitHintLabel.text = NSLocalizedString("exit_hint", comment: "")
         exitButton.setTitle(NSLocalizedString("exit_yes", comment: ""), for: .normal)
     }
@@ -124,14 +143,10 @@ extension SettingsVC {
         spoilerSwitch.isOn     = SettingsManager.showSpoilerPosts
         autoplaySwitch.isOn    = SettingsManager.allowVideoAutoplay
         themeSegmentControl.selectedSegmentIndex    = SettingsManager.interfaceTheme
-        languageSegmentControl.selectedSegmentIndex = getLanguageIndex()
-        fullPostInfoSwitch.isOn = SettingsManager.showFullPostInfo
-    }
-    
-    private func getLanguageIndex() -> Int {
-        return interfaceLanguages.firstIndex {
+        languageSegmentControl.selectedSegmentIndex = interfaceLanguages.firstIndex {
             SettingsManager.interfaceLanguage == $0.rawValue.lowercased()
         } ?? 0
+        fullPostInfoSwitch.isOn = SettingsManager.showFullPostInfo
     }
 }
 
@@ -141,15 +156,17 @@ extension SettingsVC {
         shownSubviews = [
             userExperienceSubview: false,
             appearanceSubview:     false,
-            apiBehaviour:          false,
+            apiSubview:            false,
+            databaseSubview:       false,
             exitSubview:           false
         ]
         shownSubviews.keys.forEach {
             $0.isHidden = true
             $0.alpha    = 0
-            $0.layer.cornerRadius = 5
+            $0.layer.cornerRadius = 8
         }
     }
+    
     private func updateSubviews(except view: UIView) {
         for (subview, isShown) in shownSubviews {
             subview.isUserInteractionEnabled = false
@@ -170,15 +187,15 @@ extension SettingsVC {
     }
     @IBAction private func censoreSwitchToggled(_ sender: Any) {
         SettingsManager.showCensoredPosts = censoreSwitch.isOn
-        if !changesWereMade { changesWereMade = true }
+        changesWereMade = true
     }
     @IBAction private func spoilerSwitchToggled(_ sender: Any) {
         SettingsManager.showSpoilerPosts = spoilerSwitch.isOn
-        if !changesWereMade { changesWereMade = true }
+        changesWereMade = true
     }
     @IBAction private func autoplaySliderToggled(_ sender: Any) {
         SettingsManager.allowVideoAutoplay = autoplaySwitch.isOn
-        if !changesWereMade { changesWereMade = true }
+        changesWereMade = true
     }
 }
 
@@ -191,7 +208,7 @@ extension SettingsVC {
     }
     @IBAction private func themeControlToggled(_ sender: Any) {
         SettingsManager.interfaceTheme = themeSegmentControl.selectedSegmentIndex
-        overrideUserInterfaceStyle = themeSegmentControl.selectedSegmentIndex == 0 ? .light : .dark
+        overrideUserInterfaceStyle = (themeSegmentControl.selectedSegmentIndex == 0 ? .light : .dark)
         appearanceDelegate?.didToggleTheme()
     }
     @IBAction private func languageControlToggled(_ sender: Any) {
@@ -200,68 +217,68 @@ extension SettingsVC {
     }
     @IBAction private func fullPostInfoSliderToggled(_ sender: Any) {
         SettingsManager.showFullPostInfo = fullPostInfoSwitch.isOn
-        if !changesWereMade { changesWereMade = true }
+        changesWereMade = true
     }
 }
 
 // MARK: - API Behaviour Actions
 extension SettingsVC {
     @IBAction private func apiBehaviourButtonTapped(_ sender: Any) {
-        updateSubviews(except: apiBehaviour)
-        apiBehaviour.toggleViewAnimated()
-        shownSubviews[apiBehaviour]?.toggle()
+        updateSubviews(except: apiSubview)
+        apiSubview.toggleViewAnimated()
+        shownSubviews[apiSubview]?.toggle()
     }
     
     func configureApiBehaviourUI() {
-            subredditsScrollView.subviews.forEach { $0.removeFromSuperview() }
+        subredditsScrollView.subviews.forEach { $0.removeFromSuperview() }
+        let contentStack = UIStackView()
+        contentStack.axis      = .vertical
+        contentStack.alignment = .fill
+        contentStack.spacing   = 8
+        contentStack.translatesAutoresizingMaskIntoConstraints = false
+        
+        subredditsScrollView.addSubview(contentStack)
+        NSLayoutConstraint.activate([
+            contentStack.topAnchor.constraint(equalTo: subredditsScrollView.contentLayoutGuide.topAnchor, constant: 8),
+            contentStack.bottomAnchor.constraint(equalTo: subredditsScrollView.contentLayoutGuide.bottomAnchor, constant: -8),
+            contentStack.leadingAnchor.constraint(equalTo: subredditsScrollView.contentLayoutGuide.leadingAnchor, constant: 8),
+            contentStack.trailingAnchor.constraint(equalTo: subredditsScrollView.contentLayoutGuide.trailingAnchor, constant: -8),
+            contentStack.widthAnchor.constraint(equalTo: subredditsScrollView.frameLayoutGuide.widthAnchor, constant: -16)
+        ])
+        
+        for name in savedSubreddits {
+            let card = UIView()
+            card.backgroundColor = .secondarySystemBackground
+            card.layer.cornerRadius = 8
+            card.translatesAutoresizingMaskIntoConstraints = false
             
-            let contentStack = UIStackView()
-            contentStack.axis      = .vertical
-            contentStack.alignment = .fill
-            contentStack.spacing   = 8
-            contentStack.translatesAutoresizingMaskIntoConstraints = false
+            let label = UILabel()
+            label.text = "r/\(name)"
+            label.font = .systemFont(ofSize: 16, weight: .medium)
+            label.textColor = .label
+            label.translatesAutoresizingMaskIntoConstraints = false
             
-            subredditsScrollView.addSubview(contentStack)
+            card.addSubview(label)
             NSLayoutConstraint.activate([
-                contentStack.topAnchor.constraint(equalTo: subredditsScrollView.contentLayoutGuide.topAnchor, constant: 8),
-                contentStack.bottomAnchor.constraint(equalTo: subredditsScrollView.contentLayoutGuide.bottomAnchor, constant: -8),
-                contentStack.leadingAnchor.constraint(equalTo: subredditsScrollView.contentLayoutGuide.leadingAnchor, constant: 8),
-                contentStack.trailingAnchor.constraint(equalTo: subredditsScrollView.contentLayoutGuide.trailingAnchor, constant: -8),
-                contentStack.widthAnchor.constraint(equalTo: subredditsScrollView.frameLayoutGuide.widthAnchor, constant: -16)
+                label.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 12),
+                label.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -12),
+                label.topAnchor.constraint(equalTo: card.topAnchor, constant: 8),
+                label.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -8),
+                card.heightAnchor.constraint(greaterThanOrEqualToConstant: 44)
             ])
-
-            for name in savedSubreddits {
-                let card = UIView()
-                card.backgroundColor = UIColor.secondarySystemBackground
-                card.layer.cornerRadius = 10
-                card.translatesAutoresizingMaskIntoConstraints = false
-                
-                let label = UILabel()
-                label.text = "r/\(name)"
-                label.font = .systemFont(ofSize: 16, weight: .medium)
-                label.textColor = .label
-                label.translatesAutoresizingMaskIntoConstraints = false
-                
-                card.addSubview(label)
-                NSLayoutConstraint.activate([
-                    label.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 12),
-                    label.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -12),
-                    label.topAnchor.constraint(equalTo: card.topAnchor, constant: 8),
-                    label.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -8),
-                    card.heightAnchor.constraint(greaterThanOrEqualToConstant: 44)
-                ])
-                contentStack.addArrangedSubview(card)
-            }
             
-            if savedSubreddits.isEmpty {
-                let placeholder = UILabel()
-                placeholder.text = NSLocalizedString("no_saved_subreddits", comment: "")
-                placeholder.font = .italicSystemFont(ofSize: 14)
-                placeholder.textColor = .tertiaryLabel
-                placeholder.textAlignment = .center
-                contentStack.addArrangedSubview(placeholder)
-            }
+            contentStack.addArrangedSubview(card)
         }
+        
+        if savedSubreddits.isEmpty {
+            let placeholder = UILabel()
+            placeholder.text = NSLocalizedString("no_saved_subreddits", comment: "")
+            placeholder.font = .italicSystemFont(ofSize: 14)
+            placeholder.textColor = .tertiaryLabel
+            placeholder.textAlignment = .center
+            contentStack.addArrangedSubview(placeholder)
+        }
+    }
     
     @IBAction private func addSubredditButtonTapped(_ sender: Any) {
         let ac = UIAlertController(
@@ -269,13 +286,12 @@ extension SettingsVC {
             message: nil,
             preferredStyle: .alert
         )
-        ac.addTextField { tf in tf.placeholder = "r/..." }
+        ac.addTextField { $0.placeholder = "r/..." }
         ac.addAction(UIAlertAction(title: NSLocalizedString("cancel", comment: ""), style: .cancel))
         ac.addAction(UIAlertAction(title: NSLocalizedString("add", comment: ""), style: .default) { _ in
-            guard
-                let txt = ac.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-                !txt.isEmpty
-            else { return }
+            guard let txt = ac.textFields?.first?.text?
+                    .trimmingCharacters(in: .whitespacesAndNewlines),
+                  !txt.isEmpty else { return }
             
             if self.savedSubreddits.contains(txt) {
                 let err = UIAlertController(
@@ -287,7 +303,6 @@ extension SettingsVC {
                 self.present(err, animated: true)
                 return
             }
-            
             let url = URL(string: "https://www.reddit.com/r/\(txt)/about.json")!
             URLSession.shared.dataTask(with: url) { _, resp, _ in
                 if let http = resp as? HTTPURLResponse, http.statusCode == 200 {
@@ -302,7 +317,7 @@ extension SettingsVC {
                             message: NSLocalizedString("subreddit_not_found", comment: ""),
                             preferredStyle: .alert
                         )
-                        err.addAction(.init(title: NSLocalizedString("ok", comment: "Ок"), style: .default))
+                        err.addAction(.init(title: NSLocalizedString("ok", comment: ""), style: .default))
                         self.present(err, animated: true)
                     }
                 }
@@ -314,6 +329,53 @@ extension SettingsVC {
     @IBAction private func clearSubredditsButtonTapped(_ sender: Any) {
         savedSubreddits.removeAll()
         configureApiBehaviourUI()
+    }
+}
+
+// MARK: - Database Behaviour Actions
+extension SettingsVC {
+    @IBAction func databaseToggleButtonTapped(_ sender: Any) {
+        updateSubviews(except: databaseSubview)
+        databaseSubview.toggleViewAnimated()
+        shownSubviews[databaseSubview]?.toggle()
+    }
+    
+    func configureDatabaseUI() {
+        limitPopupButton.setTitle("\(SettingsManager.localSaveLimit )", for: .normal)
+    }
+    
+    @IBAction private func limitPopupButtonTapped(_ sender: UIButton) {
+        let ac = UIAlertController(
+            title: NSLocalizedString("limit_number_of_posts_saved_locally", comment: ""),
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+        for v in limitOptions {
+            ac.addAction(.init(
+                title: "\(v)",
+                style: .default
+            ) { _ in
+                SettingsManager.localSaveLimit = v
+                sender.setTitle("\(v)", for: .normal)
+            })
+        }
+        ac.addAction(.init(title: NSLocalizedString("cancel", comment: ""), style: .cancel))
+        if let pop = ac.popoverPresentationController {
+            pop.sourceView = sender
+            pop.sourceRect = sender.bounds
+        }
+        present(ac, animated: true)
+    }
+
+    @IBAction private func downloadButtonTapped(_ sender: Any) {
+//        let limit = SettingsManager.localSaveLimit
+//        CoreDataManager.shared.preloadPosts(count: limit) {
+//        }
+    }
+    
+    @IBAction private func eraseButtonTapped(_ sender: Any) {
+        CoreDataManager.shared.deleteAllPosts()
+        SettingsManager.localSaveLimit = 0
     }
 }
 
@@ -329,14 +391,13 @@ extension SettingsVC {
     }
 }
 
-// UIView custom toggle realization
+// UIView custom toggle & animation
 private extension UIView {
     func toggleViewAnimated(duration: TimeInterval = 0.3) {
         if isHidden {
             alpha = 0
             transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
             isHidden = false
-            
             UIView.animate(
                 withDuration: duration,
                 delay: 0,
@@ -359,7 +420,7 @@ private extension UIView {
     }
 }
 
-
+// MARK: - Protocols
 public protocol SettingsDelegate: AnyObject {
     func applyUpdatedSettings()
 }
