@@ -150,6 +150,38 @@
         }
       }
     },
+    "download_failed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download failed"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Помилка завантаження"
+          }
+        }
+      }
+    },
+    "downloaded_%d_posts" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Downloaded successfuly"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Успішне завантаження"
+          }
+        }
+      }
+    },
     "erase" : {
       "localizations" : {
         "en" : {
@@ -328,6 +360,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Жодних збережених сабреддітів"
+          }
+        }
+      }
+    },
+    "offline_download" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline download"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Офлайн завантаження"
           }
         }
       }

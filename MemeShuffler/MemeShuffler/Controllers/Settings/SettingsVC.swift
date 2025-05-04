@@ -72,6 +72,7 @@ class SettingsVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
+        print(SettingsManager.localSaveLimit)
     }
         
     override func viewWillDisappear(_ animated: Bool) {
@@ -355,6 +356,7 @@ extension SettingsVC {
                 title: "\(v)",
                 style: .default
             ) { _ in
+                print("Limit is now \(v)")
                 SettingsManager.localSaveLimit = v
                 sender.setTitle("\(v)", for: .normal)
             })
@@ -368,9 +370,23 @@ extension SettingsVC {
     }
 
     @IBAction private func downloadButtonTapped(_ sender: Any) {
-//        let limit = SettingsManager.localSaveLimit
-//        CoreDataManager.shared.preloadPosts(count: limit) {
-//        }
+        let limit = SettingsManager.localSaveLimit
+        CoreDataManager.shared.deleteAllPosts()
+        CoreDataManager.shared.preloadPosts(count: limit) { success in
+            DispatchQueue.main.async {
+                let msg = success
+                    ? String(format: NSLocalizedString("downloaded_%d_posts", comment: ""), limit)
+                    : NSLocalizedString("download_failed", comment: "")
+                let alert = UIAlertController(
+                    title: NSLocalizedString("offline_download", comment: ""),
+                    message: msg,
+                    preferredStyle: .alert
+                )
+                alert.addAction(.init(title: NSLocalizedString("ok", comment: ""),
+                                      style: .default))
+                self.present(alert, animated: true)
+            }
+        }
     }
     
     @IBAction private func eraseButtonTapped(_ sender: Any) {

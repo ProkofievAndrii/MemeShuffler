@@ -3,6 +3,7 @@
     <entity name="Post" representedClassName="Post" syncable="YES" codeGenerationType="class">
         <attribute name="height" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="isDownloaded" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="isFavorite" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="mediaData" optional="YES" attributeType="Binary"/>
         <attribute name="mediaType" optional="YES" attributeType="String"/>

@@ -8,6 +8,8 @@
 import Foundation
 import CoreData
 import CommonUtils
+import MemeApiHandler
+import Kingfisher
 
 final class CoreDataManager {
     // MARK: - Singleton
@@ -146,4 +148,57 @@ final class CoreDataManager {
             saveContext()
         }
     }
+    
+    //MARK: - Background Fetch
+    func fetchDownloadedPosts() -> [Post] {
+        let req: NSFetchRequest<Post> = Post.fetchRequest()
+        req.predicate = NSPredicate(format: "isDownloaded == YES")
+        do {
+            return try viewContext.fetch(req)
+        } catch {
+            print("Fetch downloaded posts failed: \(error)")
+            return []
+        }
+    }
+
+    func preloadPosts(count: Int, completion: @escaping (Bool)->()) {
+      MemeApiManager.setQuantity(count)
+      MemeApiManager.loadMemesCompilation { newMemes in
+        guard let memes = newMemes, !memes.isEmpty else { completion(false); return }
+        self.persistentContainer.performBackgroundTask { ctx in
+          let group = DispatchGroup()
+          for meme in memes {
+            guard let urlStr = meme.urlString, let url = URL(string: urlStr) else { continue }
+            group.enter()
+            KingfisherManager.shared.retrieveImage(with: url) { result in
+              defer { group.leave() }
+              let (w, h): (Double, Double)
+              if case .success(let value) = result {
+                w = Double(value.image.size.width)
+                h = Double(value.image.size.height)
+              } else {
+                w = 0; h = 0
+              }
+              let post = Post(context: ctx)
+              post.id         = meme.id
+              post.title      = meme.title
+              post.urlString  = meme.urlString
+              post.width      = w
+              post.height     = h
+              post.isDownloaded = true
+              post.isFavorite = false
+            }
+          }
+          group.wait()
+          do {
+            try ctx.save()
+            completion(true)
+          } catch {
+            print("Preload save error:", error)
+            completion(false)
+          }
+        }
+      }
+    }
+
 }
