@@ -5,7 +5,7 @@
 //  Created by Andrii Prokofiev on 28.04.2025.
 //
 
-import Foundation
+import UIKit
 import CoreData
 import CommonUtils
 import MemeApiHandler
@@ -162,43 +162,57 @@ final class CoreDataManager {
     }
 
     func preloadPosts(count: Int, completion: @escaping (Bool)->()) {
-      MemeApiManager.setQuantity(count)
-      MemeApiManager.loadMemesCompilation { newMemes in
-        guard let memes = newMemes, !memes.isEmpty else { completion(false); return }
-        self.persistentContainer.performBackgroundTask { ctx in
-          let group = DispatchGroup()
-          for meme in memes {
-            guard let urlStr = meme.urlString, let url = URL(string: urlStr) else { continue }
-            group.enter()
-            KingfisherManager.shared.retrieveImage(with: url) { result in
-              defer { group.leave() }
-              let (w, h): (Double, Double)
-              if case .success(let value) = result {
-                w = Double(value.image.size.width)
-                h = Double(value.image.size.height)
-              } else {
-                w = 0; h = 0
-              }
-              let post = Post(context: ctx)
-              post.id         = meme.id
-              post.title      = meme.title
-              post.urlString  = meme.urlString
-              post.width      = w
-              post.height     = h
-              post.isDownloaded = true
-              post.isFavorite = false
+        MemeApiManager.setQuantity(count)
+        MemeApiManager.loadMemesCompilation { newMemes in
+            guard let memes = newMemes, !memes.isEmpty else {
+                completion(false); return
             }
-          }
-          group.wait()
-          do {
-            try ctx.save()
-            completion(true)
-          } catch {
-            print("Preload save error:", error)
-            completion(false)
-          }
-        }
-      }
-    }
+            self.persistentContainer.performBackgroundTask { ctx in
+                for meme in memes {
+                    guard let urlStr = meme.urlString,
+                          let url    = URL(string: urlStr),
+                          let data   = try? Data(contentsOf: url)
+                    else { continue }
 
+                    let post = Post(context: ctx)
+                    post.id        = meme.id
+                    post.title     = meme.title
+                    post.urlString = meme.urlString
+                    
+                    let ext = url.pathExtension.lowercased()
+                    if meme.postHint == "hosted:video" {
+                        post.mediaType = "video"
+                    } else if ext == "gif" {
+                        post.mediaType = "gif"
+                    } else {
+                        post.mediaType = "image"
+                    }
+
+                    post.mediaData = data
+
+                    if post.mediaType == "video" {
+                        post.width  = 16
+                        post.height = 9
+                    } else if let image = UIImage(data: data) {
+                        post.width  = Double(image.size.width)
+                        post.height = Double(image.size.height)
+                    } else {
+                        post.width  = 0
+                        post.height = 0
+                    }
+
+                    post.isDownloaded = true
+                    post.isFavorite   = false
+                }
+
+                do {
+                    try ctx.save()
+                    completion(true)
+                } catch {
+                    print("Preload save error:", error)
+                    completion(false)
+                }
+            }
+        }
+    }
 }

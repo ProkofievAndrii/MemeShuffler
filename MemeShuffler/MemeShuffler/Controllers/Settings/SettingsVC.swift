@@ -72,7 +72,6 @@ class SettingsVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
-        print(SettingsManager.localSaveLimit)
     }
         
     override func viewWillDisappear(_ animated: Bool) {
@@ -356,7 +355,6 @@ extension SettingsVC {
                 title: "\(v)",
                 style: .default
             ) { _ in
-                print("Limit is now \(v)")
                 SettingsManager.localSaveLimit = v
                 sender.setTitle("\(v)", for: .normal)
             })

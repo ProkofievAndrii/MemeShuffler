@@ -21,7 +21,7 @@ class MemeTableVC: UIViewController {
         static let cellReuseId            = "memeCell"
         static let settingsSegueID        = "settingsSegue"
         static let memeSegueID            = "memeSegue"
-        static let defaultCellHeight: CGFloat = 400
+        static let defaultCellHeight: CGFloat = 200
         static let navigationButtonsWidth: CGFloat = 80
     }
 
@@ -56,7 +56,8 @@ extension MemeTableVC {
     }
 
     private func configureNavigationbar() {
-        title = "r/\(SettingsManager.defaultSubreddit)"
+        let subs = UserDefaults.standard.stringArray(forKey: "savedSubreddits") ?? []
+        title = !subs.isEmpty ? "r/\(SettingsManager.defaultSubreddit)" : "No source"
         let titleColor: UIColor = SettingsManager.interfaceTheme == 0 ? .black : .white
         navigationController?.navigationBar.titleTextAttributes = [
             .foregroundColor: titleColor
@@ -146,6 +147,8 @@ extension MemeTableVC {
         isShowingFavorites   = false
         isShowingDownloaded  = false
         configureApiParameters()
+        let subs = UserDefaults.standard.stringArray(forKey: "savedSubreddits") ?? []
+        guard !subs.isEmpty else { return }
         executeRequest()
     }
 
@@ -185,6 +188,14 @@ extension MemeTableVC: SourceSelectionDelegate {
         imageDownloader.cancelAll()
         isShowingFavorites   = false
         isShowingDownloaded  = false
+        
+        let defaults = UserDefaults.standard
+        var subs = defaults.stringArray(forKey: "savedSubreddits") ?? []
+        if !subs.contains(subreddit) {
+            subs.insert(subreddit, at: 0)
+            defaults.set(subs, forKey: "savedSubreddits")
+        }
+        
         MemeApiManager.setSubredditName(subreddit)
         title = "r/\(subreddit)"
         updatedMemeRequest()
@@ -194,7 +205,6 @@ extension MemeTableVC: SourceSelectionDelegate {
         imageDownloader.cancelAll()
         switch option {
         case Options.favoritePosts.rawValue:
-            // —————————— Favorites (не меняем) ——————————
             isShowingFavorites   = true
             isShowingDownloaded  = false
             title                = option
@@ -212,7 +222,6 @@ extension MemeTableVC: SourceSelectionDelegate {
             tableView.reloadData()
 
         case Options.savedLocally.rawValue:
-            // —————————— Новый режим Downloaded ——————————
             isShowingFavorites   = false
             isShowingDownloaded  = true
             title                = option
@@ -292,19 +301,16 @@ extension MemeTableVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView,
                    heightForRowAt indexPath: IndexPath) -> CGFloat
     {
-        // Offline (Favorites или Downloaded) — одинаковая логика
         if isShowingFavorites || isShowingDownloaded {
             let meme = memes[indexPath.row]
             guard meme.width > 0 else { return Const.defaultCellHeight }
             let ratio = CGFloat(meme.height / meme.width)
             return tableView.frame.width * ratio
         }
-        // Online mode: берем рассчитанные ранее высоты
         return cellHeights[indexPath] ?? Const.defaultCellHeight
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        // подтягиваем ещё онлайн, если не в офлайн-режиме
         guard !isLoading, !isShowingFavorites, !isShowingDownloaded else { return }
         let offsetY       = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
@@ -354,17 +360,18 @@ extension MemeTableVC: UITableViewDataSource {
         ) as! MemeViewCell
         let meme = memes[indexPath.row]
 
-        // Offline (Favorites или Downloaded)
+        // Offline (Favorites/Downloaded)
         if isShowingFavorites || isShowingDownloaded {
             if let post = CoreDataManager.shared.fetchPost(withId: meme.id),
                let data = post.mediaData,
                let type = post.mediaType
             {
                 cell.setupWithLocalMedia(data, type: type)
-                // сразу пересчитываем и ставим правильную высоту
-                adjustCellHeight(cell: cell,
-                                 indexPath: indexPath,
-                                 using: (CGFloat(meme.width), CGFloat(meme.height)))
+                adjustCellHeight(
+                    cell:      cell,
+                    indexPath: indexPath,
+                    using:     (CGFloat(post.width), CGFloat(post.height))
+                )
             } else {
                 cell.setupDefault()
             }

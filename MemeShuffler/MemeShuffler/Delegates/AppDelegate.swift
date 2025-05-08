@@ -8,8 +8,9 @@
 import UIKit
 import CoreData
 import BackgroundTasks
-import Kingfisher
 import MemeApiHandler
+import CommonUtils
+import Kingfisher
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -23,7 +24,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       _ application: UIApplication,
       didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        // Register the background-refresh task
+        let defaults = UserDefaults.standard
+        if !defaults.bool(forKey: "subredditsInitialized") {
+            let initial = SettingsManager.defaultSubreddit
+            defaults.set([initial], forKey: "savedSubreddits")
+            defaults.set(true, forKey: "subredditsInitialized")
+        }
+        
         BGTaskScheduler.shared.register(
             forTaskWithIdentifier: refreshTaskIdentifier,
             using: nil
@@ -31,10 +38,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             self.handleAppRefresh(task: task as! BGAppRefreshTask)
         }
 
-        // Schedule the first refresh
         scheduleAppRefresh()
 
-        // Subscribe to memory warnings to clear caches
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(didReceiveMemoryWarning),
@@ -46,7 +51,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
-        // Whenever we go to background, schedule the next refresh
         scheduleAppRefresh()
     }
 
@@ -65,23 +69,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       _ application: UIApplication,
       didDiscardSceneSessions sceneSessions: Set<UISceneSession>
     ) {
-        // No-op
+
     }
 
     // MARK: - Memory Warning Handler
-
     @objc private func didReceiveMemoryWarning() {
-        // Clear Kingfisher and URL cache on memory pressure
         ImageCache.default.clearMemoryCache()
         URLCache.shared.removeAllCachedResponses()
     }
 
     // MARK: - BackgroundTasks Scheduling
-
     private func scheduleAppRefresh() {
         let request = BGAppRefreshTaskRequest(identifier: refreshTaskIdentifier)
-        // Earliest begin: ~15 minutes from now
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 15 * 60)
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 6 * 60 * 60)
         do {
             try BGTaskScheduler.shared.submit(request)
         } catch {
@@ -90,20 +90,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func handleAppRefresh(task: BGAppRefreshTask) {
-        // Always schedule the next one
         scheduleAppRefresh()
 
-        // If the OS terminates our work, clean up here
         task.expirationHandler = {
-            // Cancel any long-running operations if needed
         }
 
-        // Fetch new memes via your API handler
         MemeApiManager.loadMemesCompilation { memes in
             let success: Bool
 
             if let memes = memes, !memes.isEmpty {
-                // Persist into Core Data if desired
                 let context = self.persistentContainer.viewContext
                 do {
                     try context.save()
@@ -121,7 +116,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     // MARK: - Core Data stack
-
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "MemeShuffler")
         container.loadPersistentStores { storeDescription, error in
@@ -133,7 +127,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }()
 
     // MARK: - Core Data Saving support
-
     func saveContext() {
         let context = persistentContainer.viewContext
         guard context.hasChanges else { return }
