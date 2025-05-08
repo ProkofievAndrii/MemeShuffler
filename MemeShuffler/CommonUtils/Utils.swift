@@ -106,37 +106,6 @@ public struct RedditVideo: Codable {
 }
 
 //MARK: - Enums
-public enum MemeSource: String, Codable {
-    case remote, local, favorite
-}
-
-public enum Subreddits: String, CaseIterable, EnumConvertible {
-    case blursedimages  = "blursedimages"
-    case cursedcomments = "cursedcomments"
-    case deadbydaylight = "deadbydaylight"
-    case greentext      = "greentext"
-    case memes          = "memes"
-    case memevideos     = "memevideos"
-    case shitposting    = "shitposting"
-    
-    public static func getRandomSubreddit() -> Subreddits {
-        return Subreddits.allCases.randomElement() ?? .memes
-    }
-    
-    public static func getRandomSubredditGroup(subredditNum: Int) -> [Subreddits] {
-        guard subredditNum > 0, subredditNum <= Subreddits.allCases.count else {
-            return Array(Subreddits.allCases.prefix(subredditNum))
-        }
-        
-        var chosenSubreddits: Set<Subreddits> = []
-        while chosenSubreddits.count < subredditNum {
-            chosenSubreddits.insert(getRandomSubreddit())
-        }
-        
-        return Array(chosenSubreddits)
-    }
-}
-
 public enum Options: String, CaseIterable, EnumConvertible {
     case favoritePosts = "Favorite posts"
     case savedLocally = "Saved locally"

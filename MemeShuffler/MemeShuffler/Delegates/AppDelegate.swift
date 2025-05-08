@@ -9,7 +9,6 @@ import UIKit
 import CoreData
 import BackgroundTasks
 import MemeApiHandler
-import CommonUtils
 import Kingfisher
 
 @main
@@ -19,16 +18,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private let refreshTaskIdentifier = "ua.edu.ukma.Prokofiev.MemeShuffler.apprefresh"
 
     // MARK: - UIApplicationDelegate
-
     func application(
       _ application: UIApplication,
       didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         let defaults = UserDefaults.standard
-        if !defaults.bool(forKey: "subredditsInitialized") {
-            let initial = SettingsManager.defaultSubreddit
-            defaults.set([initial], forKey: "savedSubreddits")
-            defaults.set(true, forKey: "subredditsInitialized")
+        if defaults.stringArray(forKey: "savedSubreddits") == nil {
+            defaults.set(["memes"], forKey: "savedSubreddits")
+            MemeApiManager.setSubredditName("memes")
         }
         
         BGTaskScheduler.shared.register(

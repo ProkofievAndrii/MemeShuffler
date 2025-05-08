@@ -364,6 +364,22 @@
         }
       }
     },
+    "no_subreddit_selected" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No subreddits saved, proceed to app settings"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нема збережених сабреддітів, зайдіть у налаштування додатку"
+          }
+        }
+      }
+    },
     "offline_download" : {
       "localizations" : {
         "en" : {

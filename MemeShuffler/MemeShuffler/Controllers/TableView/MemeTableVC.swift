@@ -26,6 +26,11 @@ class MemeTableVC: UIViewController {
     }
 
     private let imageDownloader = ImageDownloader.default
+    private lazy var refreshControl: UIRefreshControl = {
+        let rc = UIRefreshControl()
+        rc.addTarget(self, action: #selector(handlePullToRefresh), for: .valueChanged)
+        return rc
+    }()
 
     private var memes: [Meme] = []
     private var cellHeights: [IndexPath: CGFloat] = [:]
@@ -36,9 +41,11 @@ class MemeTableVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        SettingsManager.defaultLoadingQuantity = 40
         configureUI()
         configureGestures()
+        if let initial = SettingsManager.savedSubreddits.first {
+            MemeApiManager.setSubredditName(initial)
+        }
         loadMemes()
     }
 }
@@ -49,6 +56,7 @@ extension MemeTableVC {
         applyCurrentTheme()
         configureNavigationbar()
         configureTableView()
+        updateEmptyState()
     }
 
     private func applyCurrentTheme() {
@@ -56,8 +64,9 @@ extension MemeTableVC {
     }
 
     private func configureNavigationbar() {
-        let subs = UserDefaults.standard.stringArray(forKey: "savedSubreddits") ?? []
-        title = !subs.isEmpty ? "r/\(SettingsManager.defaultSubreddit)" : "No source"
+        let savedSubs = SettingsManager.savedSubreddits
+        guard let first = savedSubs.first else { return }
+        title = !savedSubs.isEmpty ? "r/\(first)" : "No source"
         let titleColor: UIColor = SettingsManager.interfaceTheme == 0 ? .black : .white
         navigationController?.navigationBar.titleTextAttributes = [
             .foregroundColor: titleColor
@@ -76,6 +85,21 @@ extension MemeTableVC {
         tableView.backgroundColor = .systemGray6
         tableView.separatorStyle  = .none
         tableView.register(MemeViewCell.self, forCellReuseIdentifier: Const.cellReuseId)
+        tableView.refreshControl = refreshControl
+    }
+    
+    private func updateEmptyState() {
+        let subs = SettingsManager.savedSubreddits
+        if subs.isEmpty {
+            let label = UILabel()
+            label.text = NSLocalizedString("no_subreddit_selected", comment: "")
+            label.textAlignment = .center
+            label.numberOfLines = 0
+            label.textColor = .secondaryLabel
+            tableView.backgroundView = label
+        } else {
+            tableView.backgroundView = nil
+        }
     }
 }
 
@@ -89,7 +113,7 @@ extension MemeTableVC {
         longPress.minimumPressDuration = 0.5
         tableView.addGestureRecognizer(longPress)
     }
-
+    
     @objc private func handleLongPress(_ gesture: UILongPressGestureRecognizer) {
         guard gesture.state == .began else { return }
         let point = gesture.location(in: tableView)
@@ -139,6 +163,21 @@ extension MemeTableVC {
             cell.contentView.backgroundColor = original
         }
     }
+    
+    @objc private func handlePullToRefresh() {
+        guard !isShowingFavorites && !isShowingDownloaded && !isLoading else {
+            refreshControl.endRefreshing()
+            return
+        }
+        imageDownloader.cancelAll()
+        MemeApiManager.setInitial(true)
+        MemeApiManager.setAfter(nil)
+        memes.removeAll()
+        cellHeights.removeAll()
+        tableView.reloadData()
+
+        loadMemes()
+    }
 }
 
 // MARK: - API Manager Request
@@ -146,15 +185,12 @@ extension MemeTableVC {
     private func loadMemes() {
         isShowingFavorites   = false
         isShowingDownloaded  = false
-        configureApiParameters()
         let subs = UserDefaults.standard.stringArray(forKey: "savedSubreddits") ?? []
-        guard !subs.isEmpty else { return }
+        guard !subs.isEmpty else {
+            if refreshControl.isRefreshing { refreshControl.endRefreshing() }
+            return
+        }
         executeRequest()
-    }
-
-    private func configureApiParameters() {
-        MemeApiManager.setQuantity(MemeApiManager.getQuantity())
-        MemeApiManager.setSubredditName(MemeApiManager.getSubredditName())
     }
 
     private func executeRequest() {
@@ -167,6 +203,9 @@ extension MemeTableVC {
                     self.tableView.reloadData()
                 }
                 self.isLoading = false
+                if self.refreshControl.isRefreshing {
+                    self.refreshControl.endRefreshing()
+                }
             }
         }
     }
@@ -186,8 +225,8 @@ extension MemeTableVC {
 extension MemeTableVC: SourceSelectionDelegate {
     func didSelectSubreddit(_ subreddit: String) {
         imageDownloader.cancelAll()
-        isShowingFavorites   = false
-        isShowingDownloaded  = false
+        isShowingFavorites  = false
+        isShowingDownloaded = false
         
         let defaults = UserDefaults.standard
         var subs = defaults.stringArray(forKey: "savedSubreddits") ?? []
@@ -199,6 +238,7 @@ extension MemeTableVC: SourceSelectionDelegate {
         MemeApiManager.setSubredditName(subreddit)
         title = "r/\(subreddit)"
         updatedMemeRequest()
+        updateEmptyState()
     }
 
     func didSelectOption(_ option: String) {
@@ -244,6 +284,7 @@ extension MemeTableVC: SourceSelectionDelegate {
     }
 
     func didSelectFilter(_ filter: String) {
+        guard !isShowingFavorites && !isShowingDownloaded else { return }
         imageDownloader.cancelAll()
         isShowingFavorites  = false
         isShowingDownloaded = false
@@ -302,6 +343,7 @@ extension MemeTableVC: UITableViewDelegate {
                    heightForRowAt indexPath: IndexPath) -> CGFloat
     {
         if isShowingFavorites || isShowingDownloaded {
+            guard indexPath.row < memes.count else { return Const.defaultCellHeight }
             let meme = memes[indexPath.row]
             guard meme.width > 0 else { return Const.defaultCellHeight }
             let ratio = CGFloat(meme.height / meme.width)
@@ -358,6 +400,7 @@ extension MemeTableVC: UITableViewDataSource {
             withIdentifier: Const.cellReuseId,
             for: indexPath
         ) as! MemeViewCell
+        guard indexPath.row < memes.count else { return cell }
         let meme = memes[indexPath.row]
 
         // Offline (Favorites/Downloaded)

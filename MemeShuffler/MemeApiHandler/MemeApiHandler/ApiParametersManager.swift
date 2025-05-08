@@ -12,7 +12,7 @@ import CommonUtils
 //Parameters manager for API request
 class ApiParametersManager {
     //Variables
-    private var subredditName: String = SettingsManager.defaultSubreddit
+    private var subredditName: String? = nil
     private var quantity: Int = SettingsManager.defaultLoadingQuantity
     private var after: String? = nil
     private var filter: String = Filters.top.rawValue
@@ -20,7 +20,7 @@ class ApiParametersManager {
     
     //Getters/Setters
     func getSubredditName() -> String {
-        return subredditName
+        return subredditName ?? "None"
     }
     
     func setSubredditName(_ newName: String) {

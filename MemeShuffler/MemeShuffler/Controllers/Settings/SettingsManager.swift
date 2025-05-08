@@ -19,7 +19,6 @@ public class SettingsManager {
         static let interfaceLanguage       = "AppleLanguages"
         static let showFullMemeInfo        = "showFullMemeInfo"
         // API parameters
-        static let defaultSubreddit        = "defaultSubreddit"
         static let defaultLoadingQuantity  = "defaultLoadingQuantity"
         // Database parameters
         static let localSaveLimit          = "localSaveLimit"
@@ -68,14 +67,16 @@ public class SettingsManager {
     }
     
     // MARK: - API parameters
-    public static var defaultSubreddit: String {
-        get { UserDefaults.standard.string(forKey: Keys.defaultSubreddit) ?? "memes" }
-        set { UserDefaults.standard.set(newValue, forKey: Keys.defaultSubreddit) }
-    }
-    
-    public static var defaultLoadingQuantity: Int {
-        get { UserDefaults.standard.integer(forKey: Keys.defaultLoadingQuantity) }
-        set { UserDefaults.standard.set(newValue, forKey: Keys.defaultLoadingQuantity) }
+public static var defaultLoadingQuantity: Int {
+        get {
+            if let value = UserDefaults.standard.object(forKey: Keys.defaultLoadingQuantity) as? Int {
+                return value
+            }
+            return 50
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: Keys.defaultLoadingQuantity)
+        }
     }
     
     public static var localSaveLimit: Int {
@@ -84,16 +85,15 @@ public class SettingsManager {
     }
     
     // MARK: - Custom Subreddits
-    private static let defaultSubredditsList = ["memes"]
-    
     public static var savedSubreddits: [String] {
-        get {
-            UserDefaults.standard.stringArray(forKey: Keys.savedSubreddits)
-                ?? defaultSubredditsList
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: Keys.savedSubreddits)
-        }
+      get {
+        UserDefaults.standard
+          .stringArray(forKey: Keys.savedSubreddits)
+          ?? ["memes"]
+      }
+      set {
+        UserDefaults.standard.set(newValue, forKey: Keys.savedSubreddits)
+      }
     }
     
     public static func addSubreddit(_ subreddit: String) {
